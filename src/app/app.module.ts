@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { routes } from './app.routes';
+import { Title } from '@angular/platform-browser';
+import { TitleService } from './title.service';
 
 @NgModule({
   declarations: [
@@ -14,7 +16,7 @@ import { routes } from './app.routes';
     BrowserModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [Title, TitleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
