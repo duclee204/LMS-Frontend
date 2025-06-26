@@ -5,15 +5,21 @@ import { routes } from './app.routes';
 import { Title } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 @NgModule({
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SidebarComponent,
+    DashboardComponent
   ],
-  providers: [Title]
+  providers: [Title],
+  declarations: [],
+  bootstrap: []
 })
 export class AppModule { }
 // Đoạn code này là phần cấu hình module chính của ứng dụng Angular, bao gồm các thành phần cần thiết để khởi tạo ứng dụng.
