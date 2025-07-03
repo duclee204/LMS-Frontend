@@ -4,15 +4,15 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api'; 
+  private apiUrl = 'http://localhost:8080/api'; // Sửa lại đúng cổng backend
 
   constructor(private http: HttpClient) {}
 
   login(data: { username: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, data);
+    return this.http.post(`${this.apiUrl}/users/login`, data);
   }
 
-  signup(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/signup`, data);
+  register(data: { username: string; password: string; email: string; fullName: string; role: string }): Observable<any> {
+    return this.http.post('http://localhost:8080/api/users/register', data);
   }
 }

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -13,8 +15,9 @@ import { CommonModule } from '@angular/common';
 export class SignupComponent {
   signupForm: FormGroup;
   cvFile: File | null = null;
+  signupError: string | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.signupForm = this.fb.group({
       fullname: ['', Validators.required],
       username: ['', Validators.required],
@@ -36,9 +39,27 @@ export class SignupComponent {
   }
 
   onSubmit(): void {
+    this.signupError = null;
     if (this.signupForm.valid) {
-      // Xử lý đăng ký ở đây
-      console.log(this.signupForm.value, this.cvFile);
+      const { username, password, email, fullname, role } = this.signupForm.value;
+      this.authService.register({ username, password, email, fullName: fullname, role }).subscribe({
+        next: (res) => {
+          alert(res?.message || 'Đăng ký thành công!');
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          if (err.status === 409 && err.error?.message) {
+            this.signupError = err.error.message;
+            alert(this.signupError);
+          } else if (err.error?.message) {
+            this.signupError = err.error.message;
+            alert(this.signupError);
+          } else {
+            this.signupError = 'Đăng ký thất bại!';
+            alert(this.signupError);
+          }
+        }
+      });
     }
   }
 }
