@@ -1,26 +1,29 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
 import { routes } from './app.routes';
-import { Title } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { AuthInterceptor } from './auth.interceptor'; // ✅ Đường dẫn tới interceptor
 
 @NgModule({
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
     ReactiveFormsModule,
+    FormsModule,
     HttpClientModule,
     SidebarComponent,
     DashboardComponent
   ],
-  providers: [Title],
+  providers: [
+    Title,
+    
+  ],
   declarations: [],
   bootstrap: []
 })
-export class AppModule { }
-// Đoạn code này là phần cấu hình module chính của ứng dụng Angular, bao gồm các thành phần cần thiết để khởi tạo ứng dụng.
-// Nó định nghĩa các thành phần (components) sẽ được sử dụng trong ứng dụng, các module cần thiết và các dịch vụ (providers) nếu có.
+export class AppModule {}

@@ -1,0 +1,42 @@
+<app-sidebar></app-sidebar>
+<div class="main-content">
+  <div class="category-search-form">
+    <input [(ngModel)]="searchName" type="text" placeholder="Search by name" />
+    <input [(ngModel)]="searchDescription" type="text" placeholder="Search by description" />
+    <button (click)="fetchCategories()">Search</button>
+    <button (click)="showCreateForm = true">Tạo mới</button>
+  </div>
+
+  <!-- Form tạo mới / chỉnh sửa -->
+  <div class="category-create-form" *ngIf="showCreateForm">
+    <h3>{{ isEditing ? 'Chỉnh sửa' : 'Tạo mới' }} danh mục</h3>
+    <input [(ngModel)]="newCategory.name" type="text" placeholder="Tên danh mục" />
+    <input [(ngModel)]="newCategory.description" type="text" placeholder="Mô tả danh mục" />
+    <button (click)="submitCategory()">{{ isEditing ? 'Cập nhật' : 'Lưu' }}</button>
+    <button (click)="cancelCreate()">Hủy</button>
+    <!-- Nút xóa chỉ hiển thị khi đang chỉnh sửa -->
+    <button *ngIf="isEditing" (click)="deleteCategory()" class="delete-btn">Xóa</button>
+  </div>
+
+  <!-- Bảng danh sách danh mục -->
+  <table class="category-table" *ngIf="categories.length > 0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of categories">
+        <td>{{ c.name }}</td>
+        <td>{{ c.description }}</td>
+        <td>
+          <button (click)="editCategory(c)">Chỉnh sửa</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="categories.length === 0">No categories found.</p>
+</div>

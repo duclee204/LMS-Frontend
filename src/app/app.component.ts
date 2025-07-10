@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterModule } from '@angular/router'; // ✅ Import thêm RouterModule
 import { TitleService } from './services/title.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true, // 👈 nếu bạn đang dùng standalone
+  imports: [RouterOutlet, RouterModule], // ✅ Bổ sung RouterModule tại đây
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

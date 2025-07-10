@@ -21,23 +21,24 @@ export class LoginComponent {
     });
   }
 
-  onSubmit(): void {
-    this.loginError = null;
-    if (this.loginForm.valid) {
-      const { username, password } = this.loginForm.value;
-      this.authService.login({ username, password }).subscribe({
-        next: (res) => {
-          if (res?.token) {
-            localStorage.setItem('token', res.token);
-          }
-          alert(res?.message || 'Đăng nhập thành công!');
-          this.router.navigate(['/dashboard']);
-        },
-        error: (err) => {
-          this.loginError = err.error?.message || 'Đăng nhập thất bại!';
-          alert(this.loginError);
+onSubmit(): void {
+  this.loginError = null;
+  if (this.loginForm.valid) {
+    const { username, password } = this.loginForm.value;
+    this.authService.login({ username, password }).subscribe({
+      next: (res) => {
+        if (res?.token) {
+          localStorage.setItem('token', res.token);
         }
-      });
-    }
+        alert(res?.message || 'Đăng nhập thành công!');
+        this.router.navigate(['/qlkh']); // ✅ chuyển đến QLKH sau khi login
+      },
+      error: (err) => {
+        this.loginError = err.error?.message || 'Đăng nhập thất bại!';
+        alert(this.loginError);
+      }
+    });
   }
+}
+
 }
