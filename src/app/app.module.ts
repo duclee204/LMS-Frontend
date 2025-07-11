@@ -7,6 +7,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
   imports: [
@@ -14,8 +16,10 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
     RouterModule.forRoot(routes),
     ReactiveFormsModule,
     HttpClientModule,
+    FormsModule,
     SidebarComponent,
     DashboardComponent
+    
   ],
   providers: [Title],
   declarations: [],
