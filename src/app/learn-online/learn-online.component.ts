@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { SidebarComponent } from "../components/sidebar/sidebar.component";
 
 @Component({
   selector: 'app-classroom',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, SidebarComponent],
   templateUrl: './learn-online.component.html',
   styleUrls: ['./learn-online.component.scss']
 })

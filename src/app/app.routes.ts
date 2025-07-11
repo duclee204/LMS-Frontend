@@ -3,8 +3,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { authGuard } from './auth.guard';
-import { VideoUploadComponent } from './pages/video-upload/video-upload.component';
-import { LearnOnlineComponent } from './pages/learn-online/learn-online.component';
+import { VideoUploadComponent } from './video-upload/video-upload.component';
+import { LearnOnlineComponent } from './learn-online/learn-online.component';
 
 
 export const routes: Routes = [
