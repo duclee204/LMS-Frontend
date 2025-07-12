@@ -15,6 +15,7 @@ export class CoursesComponent implements OnInit {
   loading = false;
   userRole: string = '';
   userName: string = '';
+  userId: number = 0;
 
   constructor(
     private apiService: ApiService,
@@ -47,9 +48,11 @@ export class CoursesComponent implements OnInit {
         try {
           // Decode JWT token để lấy thông tin user
           const payload = JSON.parse(atob(token.split('.')[1]));
+          console.log('JWT payload:', payload);
           this.userRole = payload.role || 'student';
           this.userName = payload.sub || 'Unknown';
-          console.log('User info loaded:', { role: this.userRole, name: this.userName });
+          this.userId = payload.id || payload.userId || 0;
+          console.log('User info loaded:', { role: this.userRole, name: this.userName, userId: this.userId });
         } catch (error) {
           console.error('Error decoding token:', error);
           this.userRole = 'student';
@@ -64,18 +67,32 @@ export class CoursesComponent implements OnInit {
   // Load danh sách khóa học theo role
   loadCourses() {
     this.loading = true;
-    console.log('Loading courses for role:', this.userRole);
     
-    if (this.userRole === 'instructor') {
-      // Giảng viên: Load khóa học mình tạo/quản lý
-      this.loadInstructorCourses();
-    } else if (this.userRole === 'student') {
-      // Sinh viên: Load khóa học mình đã đăng ký
-      this.loadStudentEnrolledCourses();
+    if (this.userRole === 'student' || this.userRole === 'ROLE_student') {
+      // Sinh viên: Lấy tất cả khóa học kèm trạng thái đăng ký
+      this.apiService.getAllCoursesWithStatus(this.userId).subscribe({
+        next: (courses) => {
+          this.courses = courses;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.handleLoadError(err);
+        }
+      });
+    } else if (this.userRole === 'instructor' || this.userRole === 'ROLE_instructor') {
+      // Giảng viên: Chỉ lấy khóa học của mình
+      this.apiService.getCoursesByUser().subscribe({
+        next: (courses) => {
+          this.courses = courses;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.handleLoadError(err);
+        }
+      });
     } else {
-      // Không xác định được role, có thể là admin hoặc chưa đăng nhập
-      console.warn('Unknown user role:', this.userRole);
-      this.loading = false;
+      // Admin hoặc role khác: redirect về course-management
+      this.router.navigate(['/course-management']);
     }
   }
 
@@ -134,16 +151,63 @@ export class CoursesComponent implements OnInit {
 
   // Vào trang học/quản lý khóa học
   enterCourse(course: any) {
-    if (this.userRole === 'instructor') {
-      // Giảng viên: Vào trang quản lý (upload video, etc.)
-      this.router.navigate(['/video-upload'], { 
-        queryParams: { courseId: course.courseId } 
-      });
+    if (this.userRole === 'instructor' || this.userRole === 'ROLE_instructor') {
+      this.router.navigate(['/video-upload'], { queryParams: { courseId: course.courseId } });
+    } else if (this.userRole === 'student' || this.userRole === 'ROLE_student') {
+      if (course.enrolled) {
+        this.router.navigate(['/learn-online'], { queryParams: { courseId: course.courseId } });
+      } else {
+        if (confirm('Bạn chưa đăng ký khóa học này. Đăng ký ngay?')) {
+          this.loading = true; // Hiển thị loading khi đăng ký
+          this.apiService.post('/enrollments/register', { courseId: course.courseId })
+            .subscribe({
+              next: (response: any) => {
+                this.loading = false;
+                console.log('Enrollment response:', response);
+                
+                if (response && response.success) {
+                  this.showAlert(response.message || 'Đăng ký thành công!');
+                  course.enrolled = true;
+                  this.router.navigate(['/learn-online'], { queryParams: { courseId: course.courseId } });
+                } else {
+                  this.showAlert(response?.message || 'Có lỗi xảy ra!');
+                }
+              },
+              error: (error) => {
+                this.loading = false;
+                console.error('Enrollment error:', error);
+                
+                if (error.status === 400 && error.error && error.error.message) {
+                  this.showAlert(error.error.message);
+                  if (error.error.message.includes('đã đăng ký')) {
+                    course.enrolled = true; // Cập nhật trạng thái
+                  }
+                } else if (error.status === 401) {
+                  this.showAlert('Bạn cần đăng nhập để đăng ký khóa học!');
+                  this.router.navigate(['/login']);
+                } else if (error.status === 403) {
+                  this.showAlert('Bạn không có quyền đăng ký khóa học này!');
+                } else {
+                  // Xử lý trường hợp response text thay vì JSON
+                  let errorMessage = 'Đăng ký thất bại: ';
+                  if (error.error && typeof error.error === 'string') {
+                    errorMessage += error.error;
+                  } else if (error.error && error.error.message) {
+                    errorMessage += error.error.message;
+                  } else if (error.message) {
+                    errorMessage += error.message;
+                  } else {
+                    errorMessage += 'Lỗi không xác định';
+                  }
+                  this.showAlert(errorMessage);
+                }
+              }
+            });
+        }
+      }
     } else {
-      // Sinh viên: Vào trang học
-      this.router.navigate(['/learn-online'], { 
-        queryParams: { courseId: course.courseId } 
-      });
+      // Admin hoặc role khác
+      this.router.navigate(['/learn-online'], { queryParams: { courseId: course.courseId } });
     }
   }
 

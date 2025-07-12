@@ -4,6 +4,9 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+  getAllCoursesWithStatus(userId: number): Observable<any[]> {
+    return this.get<any[]>(`/courses/all-with-status?userId=${userId}`);
+  }
   private baseUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}

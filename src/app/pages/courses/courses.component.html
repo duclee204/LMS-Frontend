@@ -1,14 +1,14 @@
 <div class="courses-container">
   <div class="header">
     <h1 class="title">
-      <span *ngIf="userRole === 'instructor'">Khóa học của tôi</span>
-      <span *ngIf="userRole === 'student'">Khóa học đã đăng ký</span>
+      <span *ngIf="userRole === 'instructor' || userRole === 'ROLE_instructor'">Khóa học của tôi</span>
+      <span *ngIf="userRole === 'student' || userRole === 'ROLE_student'">Tất cả khóa học</span>
       <span *ngIf="!userRole">Danh sách khóa học</span>
     </h1>
     <p class="subtitle" *ngIf="userName">
       Xin chào, {{ userName }}
-      <span *ngIf="userRole === 'instructor'">(Giảng viên)</span>
-      <span *ngIf="userRole === 'student'">(Sinh viên)</span>
+      <span *ngIf="userRole === 'instructor' || userRole === 'ROLE_instructor'">(Giảng viên)</span>
+      <span *ngIf="userRole === 'student' || userRole === 'ROLE_student'">(Sinh viên)</span>
       <small style="color: #888; display: block; margin-top: 4px;">
         Debug: Role = "{{ userRole }}", Courses = {{ courses.length }}
       </small>
@@ -24,19 +24,33 @@
   <!-- Empty state -->
   <div *ngIf="!loading && courses.length === 0 && userRole" class="empty-state">
     <div class="empty-icon">📚</div>
-    <h3 *ngIf="userRole === 'instructor'">Bạn chưa tạo khóa học nào</h3>
-    <h3 *ngIf="userRole === 'student'">Bạn chưa đăng ký khóa học nào</h3>
-    <p *ngIf="userRole === 'instructor'">Hãy tạo khóa học đầu tiên để bắt đầu giảng dạy!</p>
-    <p *ngIf="userRole === 'student'">Hãy đăng ký khóa học để bắt đầu học tập!</p>
+    <h3 *ngIf="userRole === 'instructor' || userRole === 'ROLE_instructor'">Bạn chưa tạo khóa học nào</h3>
+    <h3 *ngIf="userRole === 'student' || userRole === 'ROLE_student'">Không có khóa học nào</h3>
+    <p *ngIf="userRole === 'instructor' || userRole === 'ROLE_instructor'">Hãy tạo khóa học đầu tiên để bắt đầu giảng dạy!</p>
+    <p *ngIf="userRole === 'student' || userRole === 'ROLE_student'">Hệ thống chưa có khóa học nào để hiển thị!</p>
   </div>
 
   <!-- Courses grid -->
   <div *ngIf="!loading && courses.length > 0 && userRole" class="courses-grid">
-    <div *ngFor="let course of courses" class="course-card">
+    <div *ngFor="let course of courses" class="course-card" 
+         [class.enrolled]="course.enrolled" 
+         [class.not-enrolled]="!course.enrolled && (userRole === 'student' || userRole === 'ROLE_student')">
+      
       <div class="course-header">
         <h3 class="course-title">{{ getCourseTitle(course) }}</h3>
-        <span class="course-status" [class]="course.status">
+        
+        <!-- Trạng thái khóa học cho giảng viên -->
+        <span *ngIf="userRole === 'instructor' || userRole === 'ROLE_instructor'" 
+              class="course-status" [class]="course.status">
           {{ course.status === 'published' ? 'Đã xuất bản' : 'Nháp' }}
+        </span>
+        
+        <!-- Trạng thái đăng ký cho sinh viên -->
+        <span *ngIf="userRole === 'student' || userRole === 'ROLE_student'" 
+              class="enrollment-status" 
+              [class.enrolled]="course.enrolled"
+              [class.not-enrolled]="!course.enrolled">
+          {{ course.enrolled ? '✅ Đã đăng ký' : '❌ Chưa đăng ký' }}
         </span>
       </div>
 
@@ -61,7 +75,7 @@
             <span class="meta-value">{{ course.categoryName }}</span>
           </div>
 
-          <div class="meta-item" *ngIf="userRole === 'student' && course.enrolledAt">
+          <div class="meta-item" *ngIf="(userRole === 'student' || userRole === 'ROLE_student') && course.enrolledAt">
             <span class="meta-label">Ngày đăng ký:</span>
             <span class="meta-value">{{ formatDate(course.enrolledAt) }}</span>
           </div>
@@ -70,18 +84,24 @@
 
       <div class="course-actions">
         <button 
-          class="btn btn-primary" 
+          class="btn" 
+          [class.btn-primary]="course.enrolled || (userRole === 'instructor' || userRole === 'ROLE_instructor')"
+          [class.btn-success]="!course.enrolled && (userRole === 'student' || userRole === 'ROLE_student')"
           (click)="enterCourse(course)"
-          [title]="userRole === 'instructor' ? 'Quản lý khóa học' : 'Vào học'"
+          [disabled]="loading"
+          [title]="(userRole === 'instructor' || userRole === 'ROLE_instructor') ? 'Quản lý khóa học' : (course.enrolled ? 'Vào học' : 'Đăng ký & vào học')"
         >
-          <span *ngIf="userRole === 'instructor'">📊 Quản lý</span>
-          <span *ngIf="userRole === 'student'">🎓 Vào học</span>
-          <span *ngIf="!userRole">👁️ Xem</span>
+          <span *ngIf="loading">⏳ Đang xử lý...</span>
+          <span *ngIf="!loading && (userRole === 'instructor' || userRole === 'ROLE_instructor')">📊 Quản lý</span>
+          <span *ngIf="!loading && (userRole === 'student' || userRole === 'ROLE_student') && course.enrolled">🎓 Vào học</span>
+          <span *ngIf="!loading && (userRole === 'student' || userRole === 'ROLE_student') && !course.enrolled">📝 Đăng ký ngay</span>
+          <span *ngIf="!loading && !userRole">👁️ Xem</span>
         </button>
 
         <button 
           class="btn btn-secondary" 
           (click)="viewCourseDetails(course)"
+          [disabled]="loading"
           title="Xem video của khóa học"
         >
           🎥 Xem video
