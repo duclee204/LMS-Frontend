@@ -1,76 +1,41 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private baseUrl = 'http://localhost:8080/api';
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  // Tạo headers với authorization token
-  private getAuthHeaders(): HttpHeaders {
-    // Kiểm tra nếu đang chạy trong browser
-    if (!isPlatformBrowser(this.platformId)) {
-      console.warn('Not running in browser, skipping localStorage access');
-      return new HttpHeaders();
-    }
-
-    const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token); // Debug log
-    
-    if (!token) {
-      console.warn('No token found in localStorage');
-      return new HttpHeaders();
-    }
-    
-    // Ensure token doesn't have "Bearer " prefix already
-    const cleanToken = token.startsWith('Bearer ') ? token.substring(7) : token;
-    
-    return new HttpHeaders({
-      'Authorization': `Bearer ${cleanToken}`
-    });
-  }
-
-  // GET request với authentication
+  // GET request - interceptor sẽ tự động thêm token
   get<T>(endpoint: string): Observable<T> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, { headers });
+    return this.http.get<T>(`${this.baseUrl}${endpoint}`);
   }
 
-  // POST request với authentication
+  // POST request - interceptor sẽ tự động thêm token
   post<T>(endpoint: string, data: any): Observable<T> {
-    const headers = this.getAuthHeaders();
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, data, { headers });
+    return this.http.post<T>(`${this.baseUrl}${endpoint}`, data);
   }
 
-  // POST FormData với authentication  
+  // POST FormData - interceptor sẽ tự động thêm token  
   postFormData<T>(endpoint: string, formData: FormData): Observable<T> {
-    const headers = this.getAuthHeaders();
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, formData, { headers });
+    return this.http.post<T>(`${this.baseUrl}${endpoint}`, formData);
   }
 
-  // PUT request với authentication
+  // PUT request - interceptor sẽ tự động thêm token
   put<T>(endpoint: string, data: any): Observable<T> {
-    const headers = this.getAuthHeaders();
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, data, { headers });
+    return this.http.put<T>(`${this.baseUrl}${endpoint}`, data);
   }
 
-  // DELETE request với authentication
+  // DELETE request - interceptor sẽ tự động thêm token
   delete<T>(endpoint: string): Observable<T> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, { headers });
+    return this.http.delete<T>(`${this.baseUrl}${endpoint}`);
   }
 
-  // GET blob với authentication (dành cho video streaming)
+  // GET blob request - interceptor sẽ tự động thêm token (dành cho video streaming)
   getBlob(endpoint: string): Observable<Blob> {
-    const headers = this.getAuthHeaders();
     return this.http.get(`${this.baseUrl}${endpoint}`, { 
-      headers, 
       responseType: 'blob' 
     });
   }
@@ -82,7 +47,6 @@ export class ApiService {
 
   streamVideo(videoId: number): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/videos/stream/${videoId}`, {
-      headers: this.getAuthHeaders(),
       responseType: 'blob'
     });
   }
