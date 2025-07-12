@@ -2,7 +2,8 @@
  <body>
     <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
   <!-- Sidebar content (unchanged) -->
-</aside>
+   <app-sidebar></app-sidebar>
+  </aside>
 <main class="content" role="main">
   <h2>Classroom</h2>
   
@@ -35,15 +36,15 @@
     </button>
   </div>
 
-  <div class="btn-group" role="group" aria-label="Classroom options">
+  <!-- <div class="btn-group" role="group" aria-label="Classroom options">
     <button class="btn-live" type="button">Live classroom</button>
     <button class="btn-classroom" type="button">classroom</button>
-  </div>
+  </div> -->
 
   <div class="video-call-dropdown">
-    <button class="dropdown-button" (click)="toggleDropdown()">
+    <!-- <button class="dropdown-button" (click)="toggleDropdown()">
       Video call <i class="fas fa-chevron-down"></i>
-    </button>
+    </button> -->
     <ul class="dropdown-menu" [class.show]="dropdownOpen">
       <li role="menuitem" tabindex="0">Video</li>
       <li role="menuitem" tabindex="0">Whiteboard</li>
@@ -51,9 +52,9 @@
 
     <div class="video-container">
       <video #classroomVideo controls autoplay muted style="width:100%; border-radius: 12px;"></video>
-      <div class="video-timer">
+      <!-- <div class="video-timer">
         <div class="red-dot"></div>01:10:30
-      </div>
+      </div> -->
       <button class="fullscreen-btn" aria-label="Fullscreen" type="button">
         <i class="fas fa-expand"></i>
       </button>
@@ -66,8 +67,7 @@
     <p>{{ currentVideo?.description || 'Không có mô tả.' }}</p>
   </div>
 </main>
-
-<aside class="right-sidebar" role="complementary" aria-label="Recorded videos and profile">
+ <aside class="right-sidebar" role="complementary" aria-label="Recorded videos and profile">
   <div class="profile">
     <img src="https://storage.googleapis.com/a1aa/image/bb9f3b1c-bc49-4f4c-349f-5ea9f736f6cc.jpg" alt="Profile" />
     <div class="profile-info">
@@ -77,16 +77,17 @@
   </div>
 
   <h3>Recorded videos</h3>
-  <nav class="recorded-videos">
+<nav class="recorded-videos">
     <a *ngFor="let video of videos" href="#" (click)="playVideo(video, $event)" [class.active]="video === currentVideo">
       <div><i class="far fa-play-circle"></i> {{ video.title }}</div>
       <span>{{ video.duration }}</span>
     </a>
   </nav>
 
-  <button class="open-course" type="button">Open Course material</button>
+  <!-- <button class="open-course" type="button">Open Course material</button>
   <button style="margin-top: 1rem; background:#dc2626; color:white; border:none; padding:0.5rem; border-radius:6px; cursor:pointer;" (click)="clearVideos()">
     Xoá tất cả video
-  </button>
-</aside>
+  </button> -->
+  </aside>  
+
  </body>

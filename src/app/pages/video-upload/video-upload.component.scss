@@ -1,0 +1,126 @@
+/* video-upload.component.scss */
+* {
+  box-sizing: border-box;
+}
+/* Sidebar giữ nguyên, chỉ định nghĩa upload-container */
+.upload-container {
+  padding: 2rem;
+  background: #e5ecff;
+  justify-content: center;
+  align-items: flex-start
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+  }
+
+  form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+     width: 100%;
+
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+
+        &:focus {
+          border-color: #0068e1;
+          outline: none;
+        }
+
+        &:disabled {
+          background: #f2f2f2;
+          cursor: not-allowed;
+        }
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      input[type="file"] {
+        padding: 0.5rem 0;
+      }
+
+      .help-text {
+        display: block;
+        font-size: 0.875rem;
+        color: #777;
+        margin-top: 0.5rem;
+      }
+    }
+
+    .submit-btn {
+      display: inline-block;
+      background-color: #0068e1;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0055b3;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    .success-message {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background-color: #e6ffed;
+      border: 1px solid #b2f5ea;
+      color: #086b45;
+      border-radius: 6px;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upload-container {
+    margin-left: 0;
+    padding: 1rem;
+
+    form {
+      padding: 1rem;
+    }
+  }
+}
+.main-wrapper {
+  display: flex;
+}
+
+.sidebar {
+  width: 250px; // width cố định
+}
+
+.upload-container {
+  flex: 1;
+  padding: 2rem;
+}

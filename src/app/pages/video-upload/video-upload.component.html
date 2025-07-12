@@ -1,4 +1,9 @@
-<div class="upload-container">
+<div class="main-wrapper">
+ <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+  <!-- Sidebar content (unchanged) -->
+   <app-sidebar></app-sidebar>
+  </aside>
+  <div class="upload-container">
   <h2>Upload Video Bài Giảng</h2>
   <form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
     <div class="form-group">
@@ -60,4 +65,5 @@
       Video đã được tải lên thành công!
     </div>
   </form>
+</div>
 </div>
