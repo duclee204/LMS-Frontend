@@ -4,15 +4,37 @@
     <span class="sidebar-title sidebar-title-gradient">CMC Learn</span>
   </div>
   <ul class="sidebar-menu">
-    <li class="active"><i class="icon dashboard"></i><span class="menu-text">Dashboard</span></li>
-    <li><i class="icon calendar"></i><span class="menu-text">Calender</span></li>
-    <li><i class="icon courses"></i><span class="menu-text">Courses</span></li>
-    <li><i class="icon assignments"></i><span class="menu-text">Assignments</span></li>
-    <li><i class="icon messages"></i><span class="menu-text">Messages</span></li>
-    <li><i class="icon help"></i><span class="menu-text">Help</span></li>
-    <li><i class="icon setting"></i><span class="menu-text">Setting</span></li>
+    <li routerLink="/dashboard" routerLinkActive="active" class="menu-item">
+      <i class="icon dashboard"></i>
+      <span class="menu-text">Dashboard</span>
+    </li>
+    <li class="menu-item">
+      <i class="icon calendar"></i>
+      <span class="menu-text">Calendar</span>
+    </li>
+    <li routerLink="/courses" routerLinkActive="active" class="menu-item" (click)="navigateTo('/courses')">
+      <i class="icon courses"></i>
+      <span class="menu-text">Courses</span>
+    </li>
+    <li routerLink="/learn-online" routerLinkActive="active" class="menu-item">
+      <i class="icon assignments"></i>
+      <span class="menu-text">Learn Online</span>
+    </li>
+    <li routerLink="/video-upload" routerLinkActive="active" class="menu-item">
+      <i class="icon messages"></i>
+      <span class="menu-text">Upload Video</span>
+    </li>
+    <li class="menu-item">
+      <i class="icon help"></i>
+      <span class="menu-text">Help</span>
+    </li>
+    <li class="menu-item">
+      <i class="icon setting"></i>
+      <span class="menu-text">Setting</span>
+    </li>
   </ul>
-  <div class="sidebar-logout">
-    <i class="icon logout"></i><span class="menu-text">Log out</span>
+  <div class="sidebar-logout" (click)="logout()">
+    <i class="icon logout"></i>
+    <span class="menu-text">Log out</span>
   </div>
 </div>

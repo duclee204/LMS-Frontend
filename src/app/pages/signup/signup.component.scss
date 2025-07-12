@@ -183,6 +183,91 @@ button[type="submit"]:disabled {
   color: #333;
 }
 
+.error-message {
+  margin-top: 5px;
+  
+  small {
+    color: #e74c3c;
+    font-size: 12px;
+    display: block;
+  }
+}
+
+.debug-info {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f0f0f0;
+  border-radius: 5px;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  
+  p {
+    margin: 5px 0;
+    font-family: monospace;
+  }
+}
+
+.signup-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(116deg, #1C9AD6 3.96%, #8CC9E8 57.06%, #2457C5 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  &:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(28, 154, 214, 0.3);
+  }
+}
+
+.password-strength {
+  margin-top: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+  
+  .strength-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin: 4px 0;
+    color: #6c757d;
+    
+    .icon {
+      margin-right: 8px;
+      font-weight: bold;
+      width: 16px;
+      text-align: center;
+    }
+    
+    &.valid {
+      color: #28a745;
+      
+      .icon {
+        color: #28a745;
+      }
+    }
+    
+    &:not(.valid) {
+      .icon {
+        color: #dc3545;
+      }
+    }
+  }
+}
+
 @media (max-width: 700px) {
   .signup-form-wrapper {
     min-width: 95vw;

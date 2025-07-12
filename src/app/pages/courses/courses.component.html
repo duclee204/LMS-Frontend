@@ -1,0 +1,92 @@
+<div class="courses-container">
+  <div class="header">
+    <h1 class="title">
+      <span *ngIf="userRole === 'instructor'">Khóa học của tôi</span>
+      <span *ngIf="userRole === 'student'">Khóa học đã đăng ký</span>
+      <span *ngIf="!userRole">Danh sách khóa học</span>
+    </h1>
+    <p class="subtitle" *ngIf="userName">
+      Xin chào, {{ userName }}
+      <span *ngIf="userRole === 'instructor'">(Giảng viên)</span>
+      <span *ngIf="userRole === 'student'">(Sinh viên)</span>
+      <small style="color: #888; display: block; margin-top: 4px;">
+        Debug: Role = "{{ userRole }}", Courses = {{ courses.length }}
+      </small>
+    </p>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Đang tải khóa học...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && courses.length === 0 && userRole" class="empty-state">
+    <div class="empty-icon">📚</div>
+    <h3 *ngIf="userRole === 'instructor'">Bạn chưa tạo khóa học nào</h3>
+    <h3 *ngIf="userRole === 'student'">Bạn chưa đăng ký khóa học nào</h3>
+    <p *ngIf="userRole === 'instructor'">Hãy tạo khóa học đầu tiên để bắt đầu giảng dạy!</p>
+    <p *ngIf="userRole === 'student'">Hãy đăng ký khóa học để bắt đầu học tập!</p>
+  </div>
+
+  <!-- Courses grid -->
+  <div *ngIf="!loading && courses.length > 0 && userRole" class="courses-grid">
+    <div *ngFor="let course of courses" class="course-card">
+      <div class="course-header">
+        <h3 class="course-title">{{ getCourseTitle(course) }}</h3>
+        <span class="course-status" [class]="course.status">
+          {{ course.status === 'published' ? 'Đã xuất bản' : 'Nháp' }}
+        </span>
+      </div>
+
+      <div class="course-info">
+        <p class="course-description">
+          {{ getCourseDescription(course) }}
+        </p>
+
+        <div class="course-meta">
+          <div class="meta-item" *ngIf="getCoursePrice(course)">
+            <span class="meta-label">Giá:</span>
+            <span class="meta-value price">{{ formatPrice(getCoursePrice(course)) }}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Ngày tạo:</span>
+            <span class="meta-value">{{ formatDate(getCourseCreatedDate(course)) }}</span>
+          </div>
+
+          <div class="meta-item" *ngIf="course.categoryName">
+            <span class="meta-label">Danh mục:</span>
+            <span class="meta-value">{{ course.categoryName }}</span>
+          </div>
+
+          <div class="meta-item" *ngIf="userRole === 'student' && course.enrolledAt">
+            <span class="meta-label">Ngày đăng ký:</span>
+            <span class="meta-value">{{ formatDate(course.enrolledAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-actions">
+        <button 
+          class="btn btn-primary" 
+          (click)="enterCourse(course)"
+          [title]="userRole === 'instructor' ? 'Quản lý khóa học' : 'Vào học'"
+        >
+          <span *ngIf="userRole === 'instructor'">📊 Quản lý</span>
+          <span *ngIf="userRole === 'student'">🎓 Vào học</span>
+          <span *ngIf="!userRole">👁️ Xem</span>
+        </button>
+
+        <button 
+          class="btn btn-secondary" 
+          (click)="viewCourseDetails(course)"
+          title="Xem video của khóa học"
+        >
+          🎥 Xem video
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

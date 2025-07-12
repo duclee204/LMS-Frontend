@@ -44,7 +44,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
   letter-spacing: 1px;
   display: flex;
   align-items: center;
@@ -69,6 +68,20 @@
   transition: background 0.2s;
   gap: 18px;
   min-height: 40px;
+}
+
+.menu-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: rgba(124, 190, 233, 0.1);
+}
+
+.menu-item.active {
+  background-color: rgba(124, 190, 233, 0.2);
+  border-left: 4px solid #7cbee9;
 }
 
 .sidebar-menu li > .icon {
@@ -99,6 +112,11 @@
   font-size: 1.1rem;
   cursor: pointer;
   gap: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-logout:hover {
+  background-color: rgba(231, 76, 60, 0.1);
 }
 
 /* Icon placeholders, replace with real icons or use a library */
