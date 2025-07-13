@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { CourseService, Course } from '../../services/course.service';
 import { SessionService } from '../../services/session.service';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarWrapperComponent } from '../../components/sidebar-wrapper/sidebar-wrapper.component';
 import { ProfileComponent } from '../../components/profile/profile.component';
 @Component({
   selector: 'app-course-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, SidebarComponent, ProfileComponent],
+  imports: [CommonModule, FormsModule, SidebarWrapperComponent, ProfileComponent],
   templateUrl: './course-management.component.html',
   styleUrls: ['./course-management.component.scss']
 })
@@ -52,7 +53,8 @@ export class CourseManagementComponent implements OnInit {
   constructor(
     private courseService: CourseService,
     private sessionService: SessionService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -467,7 +469,11 @@ onProfileUpdate() {
   console.log('Profile update requested');
 }
 
-onLogout() {
-  this.sessionService.logout();
-}
+  navigateToLessonManagement() {
+    this.router.navigate(['/courses']);
+  }
+
+  onLogout() {
+    this.sessionService.logout();
+  }
 }

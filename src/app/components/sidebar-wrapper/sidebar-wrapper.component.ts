@@ -68,23 +68,24 @@ export class SidebarWrapperComponent implements OnInit {
       if (token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
-          console.log('JWT payload in sidebar:', payload);
+          console.log('🔍 JWT payload in sidebar-wrapper:', payload);
           
           this.userRole = payload.role || '';
           
-          // Check for admin role (multiple possible formats)
-          this.isAdmin = this.userRole === 'ADMIN' || 
+          // Improved admin role detection for ROLE_admin format
+          this.isAdmin = this.userRole === 'ROLE_admin' || 
+                        this.userRole === 'ADMIN' || 
                         this.userRole === 'admin' || 
-                        this.userRole === 'ROLE_admin' ||
                         this.sessionService.isAdmin();
           
-          console.log('Sidebar role check:', { 
-            role: this.userRole, 
+          console.log('🎯 Sidebar role detection:', { 
+            originalRole: this.userRole,
             isAdmin: this.isAdmin,
-            sessionServiceAdmin: this.sessionService.isAdmin()
+            sessionServiceCheck: this.sessionService.isAdmin(),
+            tokenValid: this.sessionService.isTokenValid(token)
           });
         } catch (error) {
-          console.error('Error parsing token in sidebar:', error);
+          console.error('❌ Error parsing token in sidebar:', error);
           this.userRole = '';
           this.isAdmin = false;
         }

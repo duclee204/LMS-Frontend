@@ -5,7 +5,7 @@
     <span>CMC Learn</span>
   </div>
   <nav>
-    <a (click)="navigateTo('/dashboard'); $event.preventDefault()" [class.active]="isActiveRoute('/dashboard')" style="cursor: pointer;">
+    <a (click)="navigateTo('/dashboard'); $event.preventDefault()" [class.active]="isActiveRoute('/admin/dashboard')" style="cursor: pointer;">
       <i class="fas fa-th-large"></i>Dashboard
     </a>
     <a (click)="navigateTo('/users'); $event.preventDefault()" [class.active]="isActiveRoute('/users')" style="cursor: pointer;">

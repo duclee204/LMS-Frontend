@@ -1,13 +1,34 @@
-.category-layout {
+.layout-row {
   display: block;
   min-height: 100vh;
 }
 
+.sidebar {
+  width: 260px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
 .main-content {
   margin-left: 260px; /* sidebar width */
-  padding: 20px;
-  background: #f5f7fa;
+  padding: 2rem 2rem 2rem 2.5rem;
+  background: #e3e8ff;
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .category-search-form {

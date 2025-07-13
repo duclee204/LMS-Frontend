@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarWrapperComponent } from '../../components/sidebar-wrapper/sidebar-wrapper.component';
 import { ProfileComponent } from '../../components/profile/profile.component';
 import { SessionService } from '../../services/session.service';
 
@@ -10,7 +10,7 @@ import { SessionService } from '../../services/session.service';
   standalone: true,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [SidebarComponent, ProfileComponent, CommonModule]
+  imports: [SidebarWrapperComponent, ProfileComponent, CommonModule]
 })
 export class DashboardComponent implements OnInit {
   userRole: string = '';

@@ -1,7 +1,7 @@
 
 <div class="layout-row">
   <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
-    <app-sidebar></app-sidebar>
+  <app-sidebar-wrapper></app-sidebar-wrapper>
   </aside>
   
   <div class="main-content">
@@ -26,6 +26,10 @@
           {{ category.name }}
         </option>
       </select>
+      <button (click)="navigateToLessonManagement()"
+              class="lesson-management-btn">
+        Quản lý bài học
+      </button>
       <button (click)="isCreating = !isCreating"
               class="create-btn-green ml-auto">
         {{ isCreating ? 'Close' : 'Create' }}

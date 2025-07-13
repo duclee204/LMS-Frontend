@@ -108,7 +108,8 @@ export class SessionService {
   }
 
   public isAdmin(): boolean {
-    return this.getUserRole() === 'ADMIN';
+    const role = this.getUserRole();
+    return role === 'ROLE_admin' || role === 'ADMIN' || role === 'admin';
   }
 
   public isInstructor(): boolean {

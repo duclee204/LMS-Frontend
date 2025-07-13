@@ -1,13 +1,27 @@
-<div class="category-layout">
-  <app-sidebar-wrapper></app-sidebar-wrapper>
+<div class="layout-row">
+  <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+    <app-sidebar-wrapper></app-sidebar-wrapper>
+  </aside>
+  
   <div class="main-content">
-  <div class="header">
-    <h1>Quản lý danh mục khóa học</h1>
-    <p *ngIf="userRole">Vai trò: {{ userRole }}</p>
-    <div class="permission-notice" *ngIf="!isAdmin">
-      <p>⚠️ Bạn đang xem với quyền chỉ đọc. Chỉ admin mới có thể tạo/sửa/xóa danh mục.</p>
+    <!-- Profile component -->
+    <div class="profile-header">
+      <app-profile 
+        [username]="username"
+        [role]="userRole"
+        [avatarUrl]="avatarUrl"
+        (profileUpdate)="onProfileUpdate()"
+        (logout)="onLogout()">
+      </app-profile>
     </div>
-  </div>
+    
+    <div class="header">
+      <h1>Quản lý danh mục khóa học</h1>
+      <p *ngIf="userRole">Vai trò: {{ userRole }}</p>
+      <div class="permission-notice" *ngIf="!isAdmin">
+        <p>⚠️ Bạn đang xem với quyền chỉ đọc. Chỉ admin mới có thể tạo/sửa/xóa danh mục.</p>
+      </div>
+    </div>
 
   <div class="category-search-form">
     <input [(ngModel)]="searchName" type="text" placeholder="Tìm kiếm theo tên" />
