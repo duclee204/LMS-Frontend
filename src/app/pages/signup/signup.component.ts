@@ -34,7 +34,6 @@ export class SignupComponent {
       role: ['student', Validators.required]
     }, { validators: this.passwordMatchValidator });
 
-    // Listen to password changes for real-time validation
     this.signupForm.get('password')?.valueChanges.subscribe(password => {
       this.checkPasswordStrength(password || '');
     });
@@ -61,11 +60,11 @@ export class SignupComponent {
       hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
       isValid: false
     };
-    
-    this.passwordStrength.isValid = 
-      this.passwordStrength.hasLength && 
-      this.passwordStrength.hasNumber && 
-      this.passwordStrength.hasLetter && 
+
+    this.passwordStrength.isValid =
+      this.passwordStrength.hasLength &&
+      this.passwordStrength.hasNumber &&
+      this.passwordStrength.hasLetter &&
       this.passwordStrength.hasSpecial;
   }
 
@@ -80,60 +79,64 @@ export class SignupComponent {
     this.cvFile = file ? file : null;
   }
 
-  onSubmit(): void {
-    this.signupError = null;
-    
-    // Kiểm tra manual validation
-    if (!this.signupForm.get('username')?.value || 
-        !this.signupForm.get('fullname')?.value ||
-        !this.signupForm.get('email')?.value ||
-        !this.signupForm.get('password')?.value ||
-        !this.signupForm.get('confirmPassword')?.value ||
-        !this.signupForm.get('role')?.value) {
-      alert('Vui lòng điền đầy đủ thông tin!');
-      return;
-    }
+ onSubmit(): void {
+  this.signupError = null;
 
-    // Kiểm tra password strength
-    if (!this.passwordStrength.isValid) {
-      alert('Mật khẩu phải có ít nhất 10 ký tự, bao gồm chữ, số và ký tự đặc biệt!');
-      return;
-    }
-
-    // Kiểm tra password match
-    const password = this.signupForm.get('password')?.value;
-    const confirmPassword = this.signupForm.get('confirmPassword')?.value;
-    if (password !== confirmPassword) {
-      alert('Mật khẩu xác nhận không khớp!');
-      return;
-    }
-
-    // Kiểm tra email format
-    const email = this.signupForm.get('email')?.value;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert('Email không hợp lệ!');
-      return;
-    }
-
-    const { username, password: pwd, email: userEmail, fullname, role } = this.signupForm.value;
-    this.authService.register({ username, password: pwd, email: userEmail, fullName: fullname, role }).subscribe({
-      next: (res) => {
-        alert(res?.message || 'Đăng ký thành công!');
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        if (err.status === 409 && err.error?.message) {
-          this.signupError = err.error.message;
-          alert(this.signupError);
-        } else if (err.error?.message) {
-          this.signupError = err.error.message;
-          alert(this.signupError);
-        } else {
-          this.signupError = 'Đăng ký thất bại!';
-          alert(this.signupError);
-        }
-      }
-    });
+  if (this.signupForm.invalid) {
+    alert('Vui lòng điền đầy đủ thông tin!');
+    return;
   }
+
+  if (!this.passwordStrength.isValid) {
+    alert('Mật khẩu phải có ít nhất 10 ký tự, bao gồm chữ, số và ký tự đặc biệt!');
+    return;
+  }
+
+  const password = this.signupForm.get('password')?.value;
+  const confirmPassword = this.signupForm.get('confirmPassword')?.value;
+  if (password !== confirmPassword) {
+    alert('Mật khẩu xác nhận không khớp!');
+    return;
+  }
+
+  const email = this.signupForm.get('email')?.value;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Email không hợp lệ!');
+    return;
+  }
+
+  const { username, password: pwd, email: userEmail, fullname, role } = this.signupForm.value;
+
+  // ✅ Ánh xạ 'teacher' thành 'instructor' để gửi lên backend
+  const mappedRole = role === 'teacher' ? 'instructor' : role;
+
+  this.authService.register(
+    {
+      username,
+      password: pwd,
+      email: userEmail,
+      fullName: fullname,
+      role: mappedRole
+    },
+    this.cvFile
+  ).subscribe({
+    next: (res) => {
+      alert(res?.message || 'Đăng ký thành công!');
+      this.router.navigate(['/login']);
+    },
+    error: (err) => {
+      if (err.status === 409 && err.error?.message) {
+        this.signupError = err.error.message;
+        alert(this.signupError);
+      } else if (err.error?.message) {
+        this.signupError = err.error.message;
+        alert(this.signupError);
+      } else {
+        this.signupError = 'Đăng ký thất bại!';
+        alert(this.signupError);
+      }
+    }
+  });
+}
 }
