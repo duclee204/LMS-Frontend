@@ -3,13 +3,13 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SessionService } from '../../services/session.service';
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarWrapperComponent } from '../../components/sidebar-wrapper/sidebar-wrapper.component';
 import { ProfileComponent } from '../../components/profile/profile.component';
 
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, ProfileComponent],
+  imports: [CommonModule, SidebarWrapperComponent, ProfileComponent],
   templateUrl: './courses.component.html',
   styleUrls: ['./courses.component.scss']
 })
