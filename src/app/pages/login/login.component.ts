@@ -2,6 +2,7 @@ import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { SessionService } from '../../services/session.service';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
@@ -18,6 +19,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder, 
     private authService: AuthService, 
+    private sessionService: SessionService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -31,10 +33,12 @@ export class LoginComponent {
     this.loginError = null;
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
+      
       this.authService.login({ username, password }).subscribe({
         next: (res) => {
-          if (res?.token && isPlatformBrowser(this.platformId)) {
-            localStorage.setItem('token', res.token);
+          if (res?.token) {
+            // Sử dụng SessionService để quản lý session
+            this.sessionService.login(res.token);
           }
           if (isPlatformBrowser(this.platformId)) {
             alert(res?.message || 'Đăng nhập thành công!');

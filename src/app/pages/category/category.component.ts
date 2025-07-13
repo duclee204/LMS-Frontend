@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarWrapperComponent } from '../../components/sidebar-wrapper/sidebar-wrapper.component';
 import { CategoryService } from '../../services/category.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   standalone: true,
   selector: 'app-category',
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.scss'],
-  imports: [CommonModule, FormsModule, SidebarComponent]
+  imports: [CommonModule, FormsModule, SidebarWrapperComponent]
 })
 export class CategoryComponent implements OnInit {
   searchName: string = '';
@@ -20,6 +21,10 @@ export class CategoryComponent implements OnInit {
   showCreateForm = false;
   isEditing = false;
   editId: number | null = null;
+  
+  // Thêm biến để kiểm tra role
+  userRole: string = '';
+  isAdmin: boolean = false;
 
   newCategory = {
     name: '',
@@ -28,39 +33,95 @@ export class CategoryComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private apiService: ApiService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
-    // ✅ Debug: Kiểm tra token
-    if (typeof window !== 'undefined') {
+    this.loadUserRole();
+    // Chỉ fetch categories khi đang trong browser (có token)
+    if (isPlatformBrowser(this.platformId)) {
+      this.fetchCategories();
+    }
+  }
+
+  // Load thông tin role từ JWT token
+  loadUserRole(): void {
+    if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
-      console.log('🔍 Category - Token hiện tại:', token);
-      
-      if (!token) {
-        console.log('❌ Category - Không có token - cần đăng nhập');
-      } else {
-        console.log('✅ Category - Có token - tiếp tục load data');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          this.userRole = payload.role || '';
+          this.isAdmin = this.userRole === 'ROLE_admin' || this.userRole === 'admin';
+          console.log('🔍 Category - User role:', this.userRole, 'isAdmin:', this.isAdmin);
+        } catch (error) {
+          console.error('Error decoding token:', error);
+        }
       }
     }
-    
-    this.fetchCategories();
+  }
+
+  // Helper method để hiển thị alert an toàn
+  private showAlert(message: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      alert(message);
+    } else {
+      console.log('Alert (SSR):', message);
+    }
   }
 
   fetchCategories(): void {
-    let params = new HttpParams();
-    if (this.searchName) {
-      params = params.set('name', this.searchName);
-    }
-    if (this.searchDescription) {
-      params = params.set('description', this.searchDescription);
+    // Kiểm tra platform và role trước khi gọi API
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('🔍 Frontend - Skipping API call in SSR');
+      return;
     }
 
-    this.http.get<any[]>('http://localhost:8080/api/categories/list', {
-      params
-    }).subscribe({
-      next: (data) => this.categories = data,
-      error: (err) => console.error('Error fetching categories', err)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('🔍 Frontend - No token found, skipping API call');
+      this.showAlert('Bạn cần đăng nhập để xem danh mục.');
+      return;
+    }
+
+    console.log('🔍 Frontend - Making request to categories API...');
+    console.log('🔍 Frontend - User role:', this.userRole);
+    console.log('🔍 Frontend - Is admin:', this.isAdmin);
+    console.log('🔍 Frontend - Token exists:', !!token);
+    console.log('🔍 Frontend - Token value:', token?.substring(0, 50) + '...');
+
+    // Tạo query string cho params
+    let queryString = '';
+    if (this.searchName || this.searchDescription) {
+      const params = new URLSearchParams();
+      if (this.searchName) params.set('name', this.searchName);
+      if (this.searchDescription) params.set('description', this.searchDescription);
+      queryString = '?' + params.toString();
+    }
+
+    // Sử dụng ApiService với query string
+    this.apiService.get<any[]>(`/categories/list${queryString}`).subscribe({
+      next: (data) => {
+        this.categories = data;
+        console.log('✅ Categories loaded successfully:', data);
+      },
+      error: (err) => {
+        console.error('❌ Error fetching categories:', err);
+        console.error('❌ Error status:', err.status);
+        console.error('❌ Error statusText:', err.statusText);
+        console.error('❌ Error headers:', err.headers);
+        console.error('❌ Error url:', err.url);
+        
+        if (err.status === 403) {
+          this.showAlert('Bạn không có quyền xem danh sách danh mục. Vui lòng đăng nhập với quyền phù hợp.');
+        } else if (err.status === 401) {
+          this.showAlert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        } else {
+          this.showAlert('Có lỗi xảy ra khi tải danh sách danh mục.');
+        }
+      }
     });
   }
 
@@ -80,12 +141,12 @@ export class CategoryComponent implements OnInit {
         responseType: 'text'
       }).subscribe({
         next: (res) => {
-          alert(res);
+          this.showAlert(res);
           this.resetForm();
           this.fetchCategories();
         },
         error: (err) => {
-          alert('Cập nhật danh mục thất bại');
+          this.showAlert('Cập nhật danh mục thất bại');
           console.error(err);
         }
       });
@@ -95,12 +156,12 @@ export class CategoryComponent implements OnInit {
         responseType: 'text'
       }).subscribe({
         next: (res) => {
-          alert(res);
+          this.showAlert(res);
           this.resetForm();
           this.fetchCategories();
         },
         error: (err) => {
-          alert('Tạo danh mục thất bại');
+          this.showAlert('Tạo danh mục thất bại');
           console.error(err);
         }
       });
@@ -108,21 +169,21 @@ export class CategoryComponent implements OnInit {
   }
 deleteCategory(): void {
   if (this.editId === null) {
-    alert('Không tìm thấy ID danh mục để xóa.');
+    this.showAlert('Không tìm thấy ID danh mục để xóa.');
     return;
   }
 
-  if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+  if (isPlatformBrowser(this.platformId) && confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
     this.http.delete(`http://localhost:8080/api/categories/${this.editId}`, { responseType: 'text' })
       .subscribe({
         next: (res) => {
-          alert(res);
+          this.showAlert(res);
           this.fetchCategories();
           this.cancelCreate();
         },
         error: (err) => {
           console.error('Lỗi khi xóa:', err);
-          alert('Xóa thất bại.');
+          this.showAlert('Xóa thất bại.');
         }
       });
   }

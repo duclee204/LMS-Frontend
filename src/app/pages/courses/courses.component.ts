@@ -2,28 +2,39 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { SessionService } from '../../services/session.service';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { ProfileComponent } from '../../components/profile/profile.component';
 
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent, ProfileComponent],
   templateUrl: './courses.component.html',
   styleUrls: ['./courses.component.scss']
 })
 export class CoursesComponent implements OnInit {
   courses: any[] = [];
+  enrolledCourses: any[] = [];
+  availableCourses: any[] = [];
   loading = false;
   userRole: string = '';
   userName: string = '';
   userId: number = 0;
+  
+  // Profile component properties
+  username: string = '';
+  avatarUrl: string = '';
 
   constructor(
     private apiService: ApiService,
+    private sessionService: SessionService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
+    this.initializeUserProfile();
     this.loadUserInfo();
     // Chỉ load courses nếu đang trong browser (có token)
     if (isPlatformBrowser(this.platformId)) {
@@ -73,7 +84,15 @@ export class CoursesComponent implements OnInit {
       this.apiService.getAllCoursesWithStatus(this.userId).subscribe({
         next: (courses) => {
           this.courses = courses;
+          // Phân chia courses thành enrolled và available
+          this.enrolledCourses = courses.filter(course => course.enrolled);
+          this.availableCourses = courses.filter(course => !course.enrolled);
           this.loading = false;
+          console.log('Student courses loaded:', { 
+            total: courses.length, 
+            enrolled: this.enrolledCourses.length, 
+            available: this.availableCourses.length 
+          });
         },
         error: (err) => {
           this.handleLoadError(err);
@@ -90,9 +109,23 @@ export class CoursesComponent implements OnInit {
           this.handleLoadError(err);
         }
       });
+    } else if (this.userRole === 'admin' || this.userRole === 'ROLE_admin' || this.userRole === 'ADMIN') {
+      // Admin: Lấy tất cả khóa học để xem tổng quan
+      this.apiService.getAllCourses().subscribe({
+        next: (courses) => {
+          this.courses = courses;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.handleLoadError(err);
+        }
+      });
     } else {
-      // Admin hoặc role khác: redirect về course-management
-      this.router.navigate(['/course-management']);
+      // Role không xác định: hiển thị trang trống
+      this.courses = [];
+      this.enrolledCourses = [];
+      this.availableCourses = [];
+      this.loading = false;
     }
   }
 
@@ -261,5 +294,21 @@ export class CoursesComponent implements OnInit {
 
   getCourseCreatedDate(course: any): string {
     return course.createdAt || course.enrolledAt || new Date().toISOString();
+  }
+
+  // Initialize user profile data from session
+  private initializeUserProfile() {
+    this.username = this.sessionService.getFullName() || this.sessionService.getUsername() || 'User';
+    this.userRole = this.sessionService.getUserRole()?.replace('ROLE_', '') || 'Student';
+    // Không set avatarUrl để profile component tự chọn random avatar
+  }
+
+  // Profile component event handlers
+  onProfileUpdate() {
+    console.log('Profile update requested');
+  }
+
+  onLogout() {
+    this.sessionService.logout();
   }
 }

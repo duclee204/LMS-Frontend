@@ -1,28 +1,48 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
+  
+  currentRoute: string = '';
+
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private sessionService: SessionService
   ) {}
+
+  ngOnInit() {
+    // Lắng nghe sự thay đổi route để cập nhật active state
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.currentRoute = event.url;
+    });
+
+    // Set initial route
+    this.currentRoute = this.router.url;
+  }
 
   navigateTo(route: string) {
     this.router.navigate([route]);
   }
 
+  isActiveRoute(route: string): boolean {
+    return this.currentRoute === route || this.currentRoute.startsWith(route + '/');
+  }
+
   logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('token');
-      this.router.navigate(['/login']);
+    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+      this.sessionService.logout();
     }
   }
 }

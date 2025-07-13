@@ -1,4 +1,6 @@
-<div class="upload-container">
+<div class="video-upload-layout">
+  <app-sidebar-wrapper></app-sidebar-wrapper>
+  <div class="upload-container">
   <h2>Upload Video Bài Giảng</h2>
   <form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
     <div class="form-group">
@@ -60,4 +62,5 @@
       Video đã được tải lên thành công!
     </div>
   </form>
+  </div>
 </div>

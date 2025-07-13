@@ -1,92 +1,71 @@
-<!-- classroom.component.html -->
- <body>
-    <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
-  <!-- Sidebar content (unchanged) -->
-</aside>
-<main class="content" role="main">
-  <h2>Classroom</h2>
+<!-- learn-online.component.html -->
+<div class="learn-online-layout">
+  <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+    <!-- Sidebar content (unchanged) -->
+    <app-sidebar></app-sidebar>
+  </aside>
   
-  <!-- Course Selection -->
-  <div class="course-selection" style="margin-bottom: 20px;">
-    <label for="courseSelect">Chọn khóa học:</label>
-    <select 
-      id="courseSelect"
-      [(ngModel)]="courseId" 
-      (change)="onCourseChange()"
-      [disabled]="loading || courses.length === 0"
-      style="margin-left: 10px; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-      <option value="" disabled>
-        {{ loading ? 'Đang tải...' : (courses.length === 0 ? 'Không có khóa học' : 'Chọn khóa học') }}
-      </option>
-      <option *ngFor="let course of courses" [value]="course.courseId">
-        {{ course.title }}
-      </option>
-    </select>
-    <span *ngIf="loading" style="margin-left: 10px;">🔄</span>
-  </div>
-  
-  <div class="search-bar">
-    <input type="search" placeholder="Search" aria-label="Search" />
-    <button aria-label="Notifications" type="button">
-      <i class="far fa-bell"></i>
-    </button>
-    <button aria-label="Messages" type="button">
-      <i class="far fa-envelope"></i>
-    </button>
-  </div>
+  <main class="content" role="main">
+    <!-- Profile component -->
+    <div class="profile-header">
+      <app-profile 
+        [username]="username"
+        [role]="userRole"
+        [avatarUrl]="avatarUrl"
+        (profileUpdate)="onProfileUpdate()"
+        (logout)="onLogout()">
+      </app-profile>
+    </div>
 
-  <div class="btn-group" role="group" aria-label="Classroom options">
-    <button class="btn-live" type="button">Live classroom</button>
-    <button class="btn-classroom" type="button">classroom</button>
-  </div>
+    <!-- Course title - hiển thị tên khóa học thay vì "Classroom" -->
+    <h2>{{ getCurrentCourseName() }}</h2>
 
-  <div class="video-call-dropdown">
-    <button class="dropdown-button" (click)="toggleDropdown()">
-      Video call <i class="fas fa-chevron-down"></i>
-    </button>
-    <ul class="dropdown-menu" [class.show]="dropdownOpen">
-      <li role="menuitem" tabindex="0">Video</li>
-      <li role="menuitem" tabindex="0">Whiteboard</li>
-    </ul>
-
-    <div class="video-container">
-      <video #classroomVideo controls autoplay muted style="width:100%; border-radius: 12px;"></video>
-      <div class="video-timer">
-        <div class="red-dot"></div>01:10:30
+    <div class="video-call-dropdown">
+      <div class="video-container">
+        <!-- Loading state -->
+        <div *ngIf="loading" class="loading-message">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Đang tải khóa học...</p>
+        </div>
+        
+        <!-- No videos message -->
+        <div *ngIf="hasNoVideos && !loading" class="no-videos-message">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>Khóa học chưa có bài học</h3>
+          <p>Hiện tại khóa học này chưa có video bài giảng nào. Vui lòng liên hệ giảng viên để biết thêm thông tin.</p>
+        </div>
+        
+        <!-- Video player - only show when has videos and not loading -->
+        <video *ngIf="!hasNoVideos && !loading" #classroomVideo controls autoplay muted style="width:100%; border-radius: 12px;"></video>
       </div>
-      <button class="fullscreen-btn" aria-label="Fullscreen" type="button">
-        <i class="fas fa-expand"></i>
-      </button>
     </div>
-  </div>
-
-  <div class="description">
-    <p class="title">{{ currentVideo?.title || 'Không tiêu đề' }}</p>
-    <p class="subtitle">{{ currentVideo?.mimeType || 'Uploaded video' }}</p>
-    <p>{{ currentVideo?.description || 'Không có mô tả.' }}</p>
-  </div>
-</main>
-
-<aside class="right-sidebar" role="complementary" aria-label="Recorded videos and profile">
-  <div class="profile">
-    <img src="https://storage.googleapis.com/a1aa/image/bb9f3b1c-bc49-4f4c-349f-5ea9f736f6cc.jpg" alt="Profile" />
-    <div class="profile-info">
-      <p class="name">Swetha <span>shankaresh</span> <i class="fas fa-chevron-down"></i></p>
-      <p class="role">Student</p>
+  </main>
+  
+  <aside class="right-sidebar" role="complementary" aria-label="Course lessons">
+    <h3>Danh sách bài học</h3>
+    
+    <!-- Loading state for lessons -->
+    <div *ngIf="loading" class="lessons-loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Đang tải bài học...</p>
     </div>
-  </div>
-
-  <h3>Recorded videos</h3>
-  <nav class="recorded-videos">
-    <a *ngFor="let video of videos" href="#" (click)="playVideo(video, $event)" [class.active]="video === currentVideo">
-      <div><i class="far fa-play-circle"></i> {{ video.title }}</div>
-      <span>{{ video.duration }}</span>
-    </a>
-  </nav>
-
-  <button class="open-course" type="button">Open Course material</button>
-  <button style="margin-top: 1rem; background:#dc2626; color:white; border:none; padding:0.5rem; border-radius:6px; cursor:pointer;" (click)="clearVideos()">
-    Xoá tất cả video
-  </button>
-</aside>
- </body>
+    
+    <!-- No lessons message -->
+    <div *ngIf="hasNoVideos && !loading" class="no-lessons-message">
+      <i class="fas fa-book-open"></i>
+      <p>Chưa có bài học nào</p>
+    </div>
+    
+    <!-- Lessons list -->
+    <nav *ngIf="!hasNoVideos && !loading" class="recorded-videos">
+      <a *ngFor="let video of videos; let i = index" href="#" (click)="playVideo(video, $event)" [class.active]="video === currentVideo">
+        <div>
+          <i class="far fa-play-circle"></i> 
+          <span class="lesson-number">Bài {{ i + 1 }}:</span>
+          <span class="lesson-title">{{ video.title }}</span>
+        </div>
+        <span class="lesson-duration">{{ video.duration || '00:00' }}</span>
+      </a>
+    </nav>
+  </aside>  
+</div>

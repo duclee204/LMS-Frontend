@@ -49,6 +49,7 @@ export class ApiService {
   }
 
   streamVideo(videoId: number): Observable<Blob> {
+    // Interceptor sẽ tự động thêm Authorization header
     return this.http.get(`${this.baseUrl}/videos/stream/${videoId}`, {
       responseType: 'blob'
     });
@@ -67,5 +68,10 @@ export class ApiService {
     if (params.length) endpoint += `?${params.join('&')}`;
     
     return this.get<any[]>(endpoint);
+  }
+
+  // Admin method để lấy tất cả khóa học
+  getAllCourses(): Observable<any[]> {
+    return this.get<any[]>('/courses/list');
   }
 }

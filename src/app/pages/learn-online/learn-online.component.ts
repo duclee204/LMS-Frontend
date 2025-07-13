@@ -3,12 +3,15 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { SessionService } from '../../services/session.service';
 import { FormsModule } from '@angular/forms';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { ProfileComponent } from '../../components/profile/profile.component';
 
 @Component({
-  selector: 'app-classroom',
+  selector: 'app-learn-online',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, HttpClientModule, FormsModule, SidebarComponent, ProfileComponent],
   templateUrl: './learn-online.component.html',
   styleUrls: ['./learn-online.component.scss']
 })
@@ -18,17 +21,25 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
   currentVideo: any = null;
   courseId: number | null = null; // Dynamic courseId
   courses: any[] = []; // Available courses for user
+  currentCourseName: string = 'Khóa học'; // Current course name
   loading = false;
+  hasNoVideos = false; // Track if course has no videos
   private currentBlobUrl: string | null = null; // Lưu blob URL hiện tại
   private totalSeekTime = 0; // Tổng thời gian đã tua (giây)
   private maxTotalSeekTime = 120; // Tối đa 2 phút (120 giây) cho toàn bộ video
 
-  @ViewChild('classroomVideo', { static: true }) videoPlayer!: ElementRef<HTMLVideoElement>;
+  // Profile component properties
+  username: string = '';
+  userRole: string = '';
+  avatarUrl: string = '';
+
+  @ViewChild('classroomVideo', { static: false }) videoPlayer?: ElementRef<HTMLVideoElement>;
 
   constructor(
     private http: HttpClient, 
     private apiService: ApiService, 
     private route: ActivatedRoute,
+    private sessionService: SessionService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -38,6 +49,9 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
       console.log('SSR mode - skipping data loading');
       return;
     }
+
+    // Initialize user profile data
+    this.initializeUserProfile();
 
     // Check for courseId from query params first
     this.route.queryParams.subscribe(params => {
@@ -59,6 +73,13 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Initialize user profile data from session
+  private initializeUserProfile() {
+    this.username = this.sessionService.getFullName() || this.sessionService.getUsername() || 'User';
+    this.userRole = this.sessionService.getUserRole()?.replace('ROLE_', '') || 'Student';
+    // Không set avatarUrl để profile component tự chọn random avatar
+  }
+
   // Helper method để xử lý alert trong SSR
   private showAlert(message: string) {
     if (isPlatformBrowser(this.platformId)) {
@@ -66,6 +87,33 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
     } else {
       console.log('Alert (SSR):', message);
     }
+  }
+
+  // Show message when course has no videos
+  private showNoVideosMessage() {
+    this.hasNoVideos = true;
+    this.currentVideo = null;
+    console.log('Course has no videos available');
+  }
+
+  // Get current course name for display
+  getCurrentCourseName(): string {
+    return this.currentCourseName;
+  }
+
+  // Load course info to get course name
+  private loadCourseInfo() {
+    if (!this.courseId) return;
+    
+    this.apiService.get(`/courses/${this.courseId}`).subscribe({
+      next: (course: any) => {
+        this.currentCourseName = course.title || 'Khóa học';
+      },
+      error: (err) => {
+        console.error('Error loading course info:', err);
+        this.currentCourseName = 'Khóa học';
+      }
+    });
   }
 
   // Load course content directly without fetching course list first
@@ -76,6 +124,7 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
     if (this.courseId) {
       console.log('Loading course content directly for courseId:', this.courseId);
       this.loadVideos(); // Auto load videos
+      this.loadCourseInfo(); // Load course info to get course name
       this.loading = false;
     } else {
       console.warn('No courseId provided');
@@ -98,19 +147,28 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
     this.apiService.getVideosByCourse(this.courseId).subscribe({
       next: data => {
         this.videos = data;
-        if (this.videos.length) {
-          this.playVideo(this.videos[this.videos.length - 1]);
-        }
         this.loading = false;
+        
+        if (this.videos.length > 0) {
+          // Phát video đầu tiên của khóa học
+          this.playVideo(this.videos[0]);
+          this.hasNoVideos = false; // Đặt lại trạng thái không có video
+        } else {
+          // Hiển thị thông báo khi không có video
+          this.showNoVideosMessage();
+          this.hasNoVideos = true; // Đánh dấu là không có video
+        }
       },
       error: err => {
         console.error('Lỗi khi tải danh sách video:', err);
+        this.loading = false;
         if (err.status === 401) {
           this.showAlert('Bạn cần đăng nhập để xem video');
         } else if (err.status === 403) {
           this.showAlert('Bạn không có quyền truy cập khóa học này');
+        } else {
+          this.showAlert('Không thể tải danh sách video. Vui lòng thử lại!');
         }
-        this.loading = false;
       }
     });
   }
@@ -137,6 +195,13 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
     // Sử dụng API stream với authentication
     this.apiService.streamVideo(video.videoId).subscribe({
       next: (blob) => {
+        // Check if video player is available
+        if (!this.videoPlayer?.nativeElement) {
+          console.error('Video player element not found');
+          this.showAlert('Không thể phát video: Trình phát video không khả dụng');
+          return;
+        }
+
         // Cleanup blob URL cũ trước khi tạo mới
         if (this.currentBlobUrl) {
           URL.revokeObjectURL(this.currentBlobUrl);
@@ -157,17 +222,39 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Lỗi khi tải video:', err);
+        let errorMessage = 'Không thể tải video';
+        
         if (err.status === 401) {
-          this.showAlert('Bạn cần đăng nhập để xem video');
+          errorMessage = 'Bạn cần đăng nhập để xem video';
         } else if (err.status === 403) {
-          this.showAlert('Bạn không có quyền xem video này');
+          errorMessage = 'Bạn không có quyền xem video này';
+        } else if (err.status === 404) {
+          errorMessage = 'Video không tồn tại';
+        } else if (err.status === 0) {
+          errorMessage = 'Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng';
+        } else {
+          errorMessage = `Lỗi server: ${err.status} - ${err.message || 'Unknown error'}`;
         }
+        
+        this.showAlert(errorMessage);
+        console.log('Video request details:', {
+          videoId: video.videoId,
+          url: `http://localhost:8080/api/videos/stream/${video.videoId}`,
+          token: localStorage.getItem('token')?.substring(0, 20) + '...',
+          status: err.status,
+          error: err.error
+        });
       }
     });
   }
 
   private addVideoSeekLimitation() {
     if (!isPlatformBrowser(this.platformId)) return;
+    
+    if (!this.videoPlayer?.nativeElement) {
+      console.error('Video player element not available for seek limitation');
+      return;
+    }
     
     const video = this.videoPlayer.nativeElement;
     let lastTime = 0;
@@ -228,7 +315,22 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
       
       this.videos = [];
       this.currentVideo = null;
-      this.videoPlayer.nativeElement.src = '';
+      
+      // Clear video player if it exists
+      if (this.videoPlayer?.nativeElement) {
+        this.videoPlayer.nativeElement.src = '';
+      }
     }
+  }
+
+  // Profile component event handlers
+  onProfileUpdate() {
+    // Handle profile update - could navigate to profile page or refresh data
+    console.log('Profile update requested');
+  }
+
+  onLogout() {
+    // Handle logout through session service
+    this.sessionService.logout();
   }
 }

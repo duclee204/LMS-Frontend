@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { SidebarWrapperComponent } from '../../components/sidebar-wrapper/sidebar-wrapper.component';
 
 @Component({
   standalone: true,
   selector: 'app-video-upload',
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, SidebarWrapperComponent],
   templateUrl: './video-upload.component.html',
   styleUrls: ['./video-upload.component.scss']
 })
