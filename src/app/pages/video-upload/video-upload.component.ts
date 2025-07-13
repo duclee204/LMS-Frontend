@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { SessionService } from '../../services/session.service';
 import { SidebarWrapperComponent } from '../../components/sidebar-wrapper/sidebar-wrapper.component';
+import { ProfileComponent } from '../../components/profile/profile.component';
 
 @Component({
   standalone: true,
   selector: 'app-video-upload',
-  imports: [CommonModule, FormsModule, HttpClientModule, SidebarWrapperComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, SidebarWrapperComponent, ProfileComponent],
   templateUrl: './video-upload.component.html',
   styleUrls: ['./video-upload.component.scss']
 })
@@ -24,15 +26,70 @@ export class VideoUploadComponent implements OnInit {
   uploadProgress = 0; // Progress bar
   maxFileSize = 500 * 1024 * 1024; // 500MB in bytes
 
+  // Profile component properties
+  username: string = '';
+  userRole: string = '';
+  avatarUrl: string = '';
+
   constructor(
     private http: HttpClient, 
     private router: Router, 
     private apiService: ApiService,
+    private sessionService: SessionService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
+    this.initializeUserProfile();
     this.loadUserCourses();
+  }
+
+  // Initialize user profile
+  initializeUserProfile(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          this.username = payload.sub || 'User';
+          this.userRole = payload.role || '';
+          this.avatarUrl = this.getSessionAvatar();
+        } catch (error) {
+          console.error('Error decoding token:', error);
+          this.username = 'User';
+          this.userRole = '';
+          this.avatarUrl = '';
+        }
+      }
+    }
+  }
+
+  getSessionAvatar(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedAvatar = sessionStorage.getItem('userAvatar');
+      if (savedAvatar) {
+        return savedAvatar;
+      }
+      
+      // Generate random avatar if not exists
+      const avatars = [
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+      ];
+      const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+      sessionStorage.setItem('userAvatar', randomAvatar);
+      return randomAvatar;
+    }
+    return '';
+  }
+
+  onProfileUpdate(): void {
+    this.initializeUserProfile();
+  }
+
+  onLogout(): void {
+    this.sessionService.logout();
   }
 
   // Helper method để xử lý alert trong SSR
@@ -126,13 +183,12 @@ export class VideoUploadComponent implements OnInit {
         this.title = '';
         this.description = '';
         this.selectedFile = null;
-        // Giữ nguyên courseId đã chọn
+        // Giữ nguyên courseId đã chọn để tiện upload tiếp
         this.loading = false;
         
         setTimeout(() => {
           this.successMessage = false;
-          this.router.navigate(['/learn-online']);
-        }, 1500);
+        }, 3000); // Ẩn thông báo thành công sau 3 giây
       },
       error: (err) => {
         console.error('Upload failed', err);
