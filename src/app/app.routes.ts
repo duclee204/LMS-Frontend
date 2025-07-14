@@ -16,6 +16,7 @@ import { SettingsComponent } from './pages/settings/settings.component';
 import { authGuard } from './auth.guard';
 import { loginRedirectGuard } from './login-redirect.guard';
 import { adminGuard } from './admin.guard';
+import { UsersComponent } from './pages/qlnd/qlnd.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent, data: { title: 'Trang đăng nhập' }, canActivate: [loginRedirectGuard] },
@@ -33,7 +34,7 @@ export const routes: Routes = [
   { path: 'video-upload', component: VideoUploadComponent, data: { title: 'Tải video lên' }, canActivate: [authGuard] },
   { path: 'category', component: CategoryComponent, data: { title: 'Quản lý danh mục' }, canActivate: [authGuard] },
   { path: 'course-management', component: CourseManagementComponent, data: { title: 'Quản lý khóa học' }, canActivate: [authGuard] },
-  
+    
   // Admin routes
   { path: 'admin/dashboard', component: AdminDashboardComponent, data: { title: 'Admin Dashboard' }, canActivate: [authGuard, adminGuard] },
   { path: 'admin/users', component: AdminDashboardComponent, data: { title: 'User Management' }, canActivate: [authGuard, adminGuard] }, // Temporary use AdminDashboard
@@ -56,4 +57,5 @@ export const routes: Routes = [
   // Redirects for old URLs
   { path: 'tieude', redirectTo: '/category', pathMatch: 'full' },
   { path: 'qlkh', redirectTo: '/course-management', pathMatch: 'full' },
+  { path: 'qlnd', component: UsersComponent, data: { title: 'Quản lý người dùng' }, canActivate: [authGuard] }, // ✅ Thêm dòng này
 ];

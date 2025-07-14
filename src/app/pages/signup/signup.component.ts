@@ -32,6 +32,7 @@ export class SignupComponent {
       password: ['', [Validators.required, this.strongPasswordValidator]],
       confirmPassword: ['', Validators.required],
       role: ['student', Validators.required]
+      
     }, { validators: this.passwordMatchValidator });
 
     this.signupForm.get('password')?.valueChanges.subscribe(password => {
