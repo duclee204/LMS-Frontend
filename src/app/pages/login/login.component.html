@@ -6,16 +6,14 @@
       <span class="logo-title">CMC Learn</span>
     </div>
     <h2 class="login-title">Đăng nhập</h2>
-    <form>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <input id="username" type="text" placeholder="Username" />
+        <input formControlName="username" type="text" placeholder="Username" required />
       </div>
       <div class="form-group">
-        <input id="password" type="password" placeholder="Password" />
+        <input formControlName="password" type="password" placeholder="Password" required />
       </div>
-      <button type="border-radius: 10px;
-border: 1px solid #000;
-background: #FFFAFA;" class="login-btn">Login</button>
+      <button type="submit" class="login-btn">Login</button>
     </form>
     <div class="login-links">
       <a href="#" class="forgot-link">Quên mật khẩu?</a>

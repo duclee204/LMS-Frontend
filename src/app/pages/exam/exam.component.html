@@ -1,0 +1,139 @@
+<!-- exam.component.html -->
+<div class="container">
+  <aside id="sidebar">
+    <div class="logo-container">
+      <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png" alt="CMC Learn logo" width="40" height="40" />
+      <span>CMC Learn</span>
+    </div>
+    <nav>
+      <a href="#"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a href="#"><i class="fas fa-calendar"></i>Calender</a>
+      <a href="#"><i class="fas fa-book"></i>Courses</a>
+      <a href="#"><i class="fas fa-pen-square"></i>Assignments</a>
+      <a href="#"><i class="fas fa-comment-alt"></i>Messages</a>
+      <a href="#"><i class="fas fa-question-circle"></i>Help</a>
+      <a href="#"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+    <a href="#" class="logout">
+      <i class="fas fa-sign-out-alt"></i>
+      Log out
+    </a>
+  </aside>
+
+  <main>
+    <header>
+      <h2 style="visibility: hidden;">Course Creation</h2>
+      <div class="header-right">
+        <i class="far fa-bell"></i>
+        <i class="far fa-envelope"></i>
+        <div class="profile" (click)="toggleProfile($event)">
+          <div class="profile-img-wrapper">
+            <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg" alt="User" />
+          </div>
+          <div class="profile-info">
+            <p class="profile-name">Swetha shankaresh</p>
+            <p class="profile-role">Student</p>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+          <div class="profile-dropdown" [style.display]="showDropdown ? 'block' : 'none'">
+            <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+            <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="breadcrumb">
+      <button id="toggle-left-menu-btn" (click)="toggleLeftMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a href="#" class="breadcrumb-course">ITPYTHON001</a>
+      <span>›</span>
+      <span class="current">Tests</span>
+      <span>›</span>
+      <span class="item">Add Exam</span>
+    </div>
+
+    <div class="content-wrapper" [ngClass]="{ 'menu-hidden': isMenuHidden }">
+      <div class="left-menu" [ngClass]="{ 'hide': isMenuHidden, 'show': !isMenuHidden }">
+        <div class="link"><a href="#">Home</a></div>
+        <div class="link"><a href="#">Discussion</a></div>
+        <div class="link"><a href="#">Grades</a></div>
+        <div class="link"><a href="#">Modules</a></div>
+        <div class="title-black"><a href="#">Tests</a></div>
+      </div>
+
+      <div class="right-content">
+        <div class="tabs">
+          <button class="tab-button active">Thông tin cơ bản</button>
+          <button class="tab-button">Câu hỏi</button>
+          <button class="tab-button">Câu trả lời</button>
+        </div>
+
+        <div class="form-container">
+          <form autocomplete="off" novalidate>
+            <div>
+              <label for="exam-title">Tên đề thi *</label>
+              <input type="text" id="exam-title" placeholder="Nhập tên đề thi" />
+            </div>
+            <div style="display:flex; flex-direction: column; height: 100%;">
+              <label for="description">Mô tả</label>
+              <textarea id="description" placeholder="Mô tả bổ sung"></textarea>
+            </div>
+          </form>
+
+          <form autocomplete="off" novalidate>
+            <fieldset>
+              <legend>Options</legend>
+              <div class="options">
+                <label><input type="checkbox" /> Shuffle Answer</label>
+                <label>
+                  <input type="checkbox" /> Time Limit
+                  <span class="time-limit-container">
+                    <input type="text" maxlength="2" />
+                    <span>Minutes</span>
+                  </span>
+                </label>
+                <label><input type="checkbox" /> Allow Multiple Attempts</label>
+                <label><input type="checkbox" /> Let Students See Their Quiz Responses</label>
+                <label><input type="checkbox" /> Show one question at a time</label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Assigns</legend>
+              <div class="assigns">
+                <label for="due">Due</label>
+                <div class="input-with-button">
+                  <input type="text" id="due" />
+                  <button><i class="fas fa-calendar-alt"></i></button>
+                </div>
+                <div class="assigns-dates">
+                  <div>
+                    <label for="available-from">Available from</label>
+                    <div class="input-with-button">
+                      <input type="text" id="available-from" />
+                      <button><i class="fas fa-calendar-alt"></i></button>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="until">Until</label>
+                    <div class="input-with-button">
+                      <input type="text" id="until" />
+                      <button><i class="fas fa-calendar-alt"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+
+        <div class="buttons-container">
+          <button class="btn cancel">Cancel</button>
+          <button class="btn save-publish">Save & Publish</button>
+          <button class="btn save">Save</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

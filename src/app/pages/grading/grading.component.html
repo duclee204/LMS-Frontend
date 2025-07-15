@@ -1,0 +1,127 @@
+<div class="container">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="logo-container">
+      <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png"
+        alt="CMC Learn logo with blue icon and text" width="40" height="40" />
+      <span>CMC Learn</span>
+    </div>
+    <nav>
+      <a href="#"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a href="#"><i class="fas fa-calendar"></i>Calender</a>
+      <a href="#"><i class="fas fa-book"></i>Courses</a>
+      <a href="#"><i class="fas fa-pen-square"></i>Assignments</a>
+      <a href="#"><i class="fas fa-comment-alt"></i>Messages</a>
+      <a href="#"><i class="fas fa-question-circle"></i>Help</a>
+      <a href="#"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+    <a href="#" class="logout">
+      <i class="fas fa-sign-out-alt"></i> Log out
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+    <header>
+      <h2 style="visibility: hidden;">Course Creation</h2>
+      <div class="header-right" aria-label="Notifications and messages">
+        <i class="far fa-bell" title="Notifications" tabindex="0"></i>
+        <i class="far fa-envelope" title="Messages" tabindex="0"></i>
+        <div class="profile" tabindex="0" aria-label="User profile menu" #profile>
+          <div class="profile-img-wrapper">
+            <img
+              src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+              alt="Smiling woman with curly hair wearing glasses and holding books, on yellow background" />
+          </div>
+          <div class="profile-info">
+            <p class="profile-name">Swetha shankaresh</p>
+            <p class="profile-role">Student</p>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+          <div class="profile-dropdown" #profileDropdown>
+            <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+            <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="breadcrumb" aria-label="Breadcrumb navigation">
+      <button id="toggle-left-menu-btn" aria-label="Toggle left menu" #toggleBtn>
+        <i class="fas fa-bars" aria-hidden="true"></i>
+      </button>
+      <a href="#" class="breadcrumb-course" style="font-size: 20px; color: #018ED5;">ITPYTHON001</a>
+      <span aria-hidden="true">›</span>
+      <span class="current" aria-current="page">Tests</span>
+      <span aria-hidden="true">›</span>
+      <span class="item" aria-current="page">Add Exam</span>
+    </div>
+
+    <div class="content-wrapper" #contentWrapper>
+      <div class="left-menu" id="left-menu" #leftMenu aria-label="Secondary navigation">
+        <div class="link"><a href="#">Home</a></div>
+        <div class="link"><a href="#">Discussion</a></div>
+        <div class="link"><a href="#">Grades</a></div>
+        <div class="link"><a href="#">Modules</a></div>
+        <div class="title-black" tabindex="0"><a href="#">Tests</a></div>
+      </div>
+
+      <div class="right-content">
+        <div class="tabs" role="tablist" aria-label="Main tabs">
+          <button type="button" role="tab" aria-selected="false" tabindex="-1">Thông tin cơ bản</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1">Câu hỏi</button>
+          <button type="button" role="tab" aria-selected="true" tabindex="0" class="active">Câu trả lời</button>
+        </div>
+
+        <h2>Danh sách sinh viên nộp bài</h2>
+
+        <form class="filters" aria-label="Filter students by grading status">
+          <label><input type="radio" name="filter" value="all" checked /> Tất cả</label>
+          <label><input type="radio" name="filter" value="graded" /> Đã chấm</label>
+          <label><input type="radio" name="filter" value="not-graded" /> Chưa chấm</label>
+        </form>
+
+        <div class="content-area">
+          <ul class="student-list scrollbar-thin" tabindex="0" aria-label="Student list">
+            <li class="active" tabindex="0" aria-current="true">Nguyễn Văn A</li>
+            <li tabindex="0">Trần Thị B</li>
+            <li tabindex="0">Lê Văn C</li>
+            <li tabindex="0">Phạm Thị D</li>
+            <li tabindex="0">Hoàng Văn E</li>
+            <li tabindex="0">Đặng Thị F</li>
+            <li tabindex="0">Vũ Văn G</li>
+            <li tabindex="0">Bùi Thị H</li>
+          </ul>
+
+          <section class="answers-section" aria-label="Student answers and grading">
+            <div>
+              <div class="student-code">Mã SV: <span>123456</span></div>
+
+              <div class="question-block">
+                <p>Câu 1:</p>
+                <div class="answer-text" tabindex="0">
+                  Đây là câu trả lời tự luận của sinh viên cho câu hỏi số 1. Nội dung có thể dài và có nhiều
+                  phân tích
+                </div>
+              </div>
+
+              <div class="question-block">
+                <p>Câu 2:</p>
+                <div class="answer-text" tabindex="0">
+                  Đây là câu trả lời tự luận của sinh viên cho câu hỏi số 2. Nội dung có thể dài và có nhiều
+                  phân tích
+                </div>
+              </div>
+            </div>
+
+            <form class="grading-form" aria-label="Grade input form">
+              <label for="score">Nhập điểm:</label>
+              <input type="text" id="score" name="score" />
+              <button type="submit">Lưu điểm</button>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

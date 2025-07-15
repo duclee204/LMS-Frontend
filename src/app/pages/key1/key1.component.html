@@ -1,0 +1,133 @@
+  <div class="container">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="logo-container">
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png"
+                    alt="CMC Learn logo with blue icon and text" width="40" height="40" />
+                <span>CMC Learn</span>
+            </div>
+            <nav>
+                <a href="#"><i class="fas fa-th-large"></i>Dashboard</a>
+                <a href="#"><i class="fas fa-calendar"></i>Calender</a>
+                <a href="#"><i class="fas fa-book"></i>Courses</a>
+                <a href="#"><i class="fas fa-pen-square"></i>Assignments</a>
+                <a href="#"><i class="fas fa-comment-alt"></i>Messages</a>
+                <a href="#"><i class="fas fa-question-circle"></i>Help</a>
+                <a href="#"><i class="fas fa-cog"></i>Setting</a>
+            </nav>
+            <a href="#" class="logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Log out
+            </a>
+        </aside>
+        <!-- Main content -->
+        <main>
+            <header>
+                <h2 style="visibility: hidden;">Course Creation</h2>
+                <div class="header-right" aria-label="Notifications and messages">
+                    <i class="far fa-bell" title="Notifications" tabindex="0"></i>
+                    <i class="far fa-envelope" title="Messages" tabindex="0"></i>
+                    <div class="profile" tabindex="0" aria-label="User profile menu">
+                        <div class="profile-img-wrapper">
+                            <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+                                alt="Smiling woman with curly hair wearing glasses and holding books, on yellow background" />
+                        </div>
+                        <div class="profile-info">
+                            <p class="profile-name">Swetha shankaresh</p>
+                            <p class="profile-role">Student</p>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                        <div class="profile-dropdown">
+                            <div class="dropdown-item" onclick="updateProfile()">Cập nhật hồ sơ</div>
+                            <div class="dropdown-item" onclick="logout()">Đăng xuất</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="breadcrumb" aria-label="Breadcrumb navigation">
+                <button id="toggle-left-menu-btn" aria-label="Toggle left menu">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                <a href="#" class="breadcrumb-course" style="font-size: 20px; color: #018ED5;">
+                    ITPYTHON001
+                </a>
+                <span aria-hidden="true">›</span>
+                <span class="current" aria-current="page">Tests</span>
+                <span aria-hidden="true">›</span>
+                <span class="item" aria-current="page">Add Exam</span>
+            </div>
+            <div class="content-wrapper">
+                <div class="left-menu" id="left-menu" aria-label="Secondary navigation">
+                    <div class="link"><a href="#">Home</a></div>
+                    <div class="link"><a href="#">Discussion</a></div>
+                    <div class="link"><a href="#">Grades</a></div>
+                    <div class="link"><a href="#">Modules</a></div>
+                    <div class="title-black" tabindex="0"><a href="#">Tests</a></div>
+                </div>
+                <div class="right-content">
+                    <div class="tabs" role="tablist" aria-label="Main tabs">
+                        <button type="button" class="tab-btn" role="tab" aria-selected="false" tabindex="-1">
+                            Thông tin cơ bản
+                        </button>
+                        <button type="button" class="tab-btn active" role="tab" aria-selected="true" tabindex="0">
+                            Câu hỏi
+                        </button>
+                        <button type="button" class="tab-btn" role="tab" aria-selected="false" tabindex="-1">
+                            Câu trả lời
+                        </button>
+                    </div>
+                    <div class="questions-header" style="margin-bottom: 1.5rem;">
+                    <h1 class="title" style="margin-bottom: 0; border-bottom: none;">Lịch sử Đảng cộng sản Việt Nam
+                    </h1>
+                </div>
+                <hr class="divider" />
+                <div class="form-row-with-btn" style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <section class="questions" style="width:100%; display:flex; flex-direction:column; gap:1.5rem;">
+                        <form class="exam-form" novalidate style="flex: 1 1 0;">
+                            <div>
+                                <input type="text" class="question-input" placeholder="Nhập nội dung câu hỏi"
+                                    aria-label="Nhập nội dung câu hỏi" />
+                            </div>
+                            <hr class="form-divider" />
+                            <div class="toolbar" role="toolbar" aria-label="Text formatting toolbar">
+                                <div class="dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false"
+                                    aria-label="Font size selector">
+                                    <span>12pt</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <button type="button" aria-label="Bold" class="bold">B</button>
+                                <button type="button" aria-label="Italic" class="italic">I</button>
+                                <button type="button" aria-label="Underline" class="underline">U</button>
+                                <div class="dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false"
+                                    aria-label="Text color selector">
+                                    <span>A</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false"
+                                    aria-label="Pen tool selector">
+                                    <i class="fas fa-pen"></i>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <textarea class="answer-textarea" rows="10" placeholder="Nhập câu trả lời...."
+                                aria-label="Nhập câu trả lời"></textarea>
+                            <div class="attach-file" role="button" tabindex="0" aria-label="Attach file">
+                                <i class="fas fa-link"></i>Đính kèm file
+                            </div>
+                            <div class="form-buttons">
+                                <button type="button" class="btn-cancel">Cancel</button>
+                                <button type="submit" class="btn-save">Save</button>
+                            </div>
+                        </form>
+                    </section>
+                    <div class="add-question-btn" role="button" tabindex="0" aria-label="Add question" id="add-question-btn" style="margin-top: 0.5rem; width: 2.5rem; height: 2.5rem; position: static; align-self: flex-start;" (click)="addQuestion()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </main>
+    </div>

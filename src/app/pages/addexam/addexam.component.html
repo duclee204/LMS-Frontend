@@ -1,0 +1,118 @@
+<!-- app.component.html -->
+<div class="container">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="logo-container">
+      <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png" alt="CMC Learn logo"
+        width="40" height="40" />
+      <span>CMC Learn</span>
+    </div>
+    <nav>
+      <a routerLink="/dashboard"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a routerLink="/calendar"><i class="fas fa-calendar"></i>Calender</a>
+      <a routerLink="/courses"><i class="fas fa-book"></i>Courses</a>
+      <a routerLink="/assignments"><i class="fas fa-pen-square"></i>Assignments</a>
+      <a routerLink="/messages"><i class="fas fa-comment-alt"></i>Messages</a>
+      <a routerLink="/help"><i class="fas fa-question-circle"></i>Help</a>
+      <a routerLink="/settings"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+    <a routerLink="/logout" class="logout">
+      <i class="fas fa-sign-out-alt"></i>
+      Log out
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+    <header>
+      <h2 style="visibility: hidden;">Course Creation</h2>
+      <div class="header-right">
+        <i class="far fa-bell" title="Notifications"></i>
+        <i class="far fa-envelope" title="Messages"></i>
+        <div class="profile" (click)="toggleProfileDropdown($event)">
+          <div class="profile-img-wrapper">
+            <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+              alt="User profile image" />
+          </div>
+          <div class="profile-info">
+            <p class="profile-name">Swetha shankaresh</p>
+            <p class="profile-role">Student</p>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+          <div class="profile-dropdown" [style.display]="showProfileDropdown ? 'block' : 'none'">
+            <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+            <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="breadcrumb">
+      <button id="toggle-left-menu-btn" (click)="toggleLeftMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a href="#" class="breadcrumb-course">ITPYTHON001</a>
+      <span>›</span>
+      <span class="current">Tests</span>
+      <span>›</span>
+      <span class="item">Add Exam</span>
+    </div>
+
+    <div class="content-wrapper" [ngClass]="{ 'menu-hidden': isLeftMenuHidden }">
+      <div class="left-menu" [ngClass]="{ 'hide': isLeftMenuHidden, 'show': !isLeftMenuHidden }">
+        <div class="link"><a href="#">Home</a></div>
+        <div class="link"><a href="#">Discussion</a></div>
+        <div class="link"><a href="#">Grades</a></div>
+        <div class="link"><a href="#">Modules</a></div>
+        <div class="title-black"><a href="#">Tests</a></div>
+      </div>
+
+      <div class="right-content">
+        <div class="top-bar">
+          <button class="add-exam">
+            <i class="fas fa-plus"></i> Exam
+          </button>
+          <div class="filters">
+            <div class="search-wrapper">
+              <input type="text" placeholder="Search" [(ngModel)]="searchTerm" (input)="searchExams()" />
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>#Question</th>
+              <th>Due</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let exam of filteredExams">
+              <td>{{ exam.name }}</td>
+              <td>{{ exam.questions }}</td>
+              <td>{{ exam.due }}</td>
+              <td class="icon-cell">
+                <i [class]="exam.status === 'Published' ? 'fas fa-check-circle' : 'fas fa-ban'"
+                  [style.color]="exam.status === 'Published' ? '#2ecc71' : '#e74c3c'"></i>
+                <div class="dropdown-container">
+                  <i class="fas fa-ellipsis-v dropdown-toggle" (click)="toggleDropdown(exam)"></i>
+                  <div class="dropdown-menu" *ngIf="exam.dropdownOpen">
+                    <div class="dropdown-item" (click)="setStatus(exam, 'Published')">Publish</div>
+                    <div class="dropdown-item" (click)="setStatus(exam, 'NotPublished')">Not Publish</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="filteredExams.length === 0"
+          style="color: red; margin-top: 10px; text-align: center; font-weight: 500;">
+          Không tồn tại bài test
+        </p>
+      </div>
+    </div>
+  </main>
+</div>

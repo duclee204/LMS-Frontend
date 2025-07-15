@@ -1,0 +1,163 @@
+<!-- question.component.html -->
+<div class="container">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="logo-container">
+      <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png"
+        alt="CMC Learn logo with blue icon and text" width="40" height="40" />
+      <span>CMC Learn</span>
+    </div>
+    <nav>
+      <a href="#"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a href="#"><i class="fas fa-calendar"></i>Calender</a>
+      <a href="#"><i class="fas fa-book"></i>Courses</a>
+      <a href="#"><i class="fas fa-pen-square"></i>Assignments</a>
+      <a href="#"><i class="fas fa-comment-alt"></i>Messages</a>
+      <a href="#"><i class="fas fa-question-circle"></i>Help</a>
+      <a href="#"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+    <a href="#" class="logout">
+      <i class="fas fa-sign-out-alt"></i> Log out
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+    <header>
+      <h2 style="visibility: hidden;">Course Creation</h2>
+      <div class="header-right" aria-label="Notifications and messages">
+        <i class="far fa-bell" title="Notifications" tabindex="0"></i>
+        <i class="far fa-envelope" title="Messages" tabindex="0"></i>
+        <div class="profile" tabindex="0" aria-label="User profile menu" #profile>
+          <div class="profile-img-wrapper">
+            <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+              alt="Smiling woman" />
+          </div>
+          <div class="profile-info">
+            <p class="profile-name">Swetha shankaresh</p>
+            <p class="profile-role">Student</p>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+          <div class="profile-dropdown" #profileDropdown>
+            <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+            <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="breadcrumb">
+      <button id="toggle-left-menu-btn" #toggleBtn>
+        <i class="fas fa-bars"></i>
+      </button>
+      <a href="#" class="breadcrumb-course" style="font-size: 20px; color: #018ED5;">
+        ITPYTHON001
+      </a>
+      <span>›</span>
+      <span class="current">Tests</span>
+      <span>›</span>
+      <span class="item">Add Exam</span>
+    </div>
+
+    <div class="content-wrapper" #contentWrapper>
+      <div class="left-menu" id="left-menu" #leftMenu>
+        <div class="link"><a href="#">Home</a></div>
+        <div class="link"><a href="#">Discussion</a></div>
+        <div class="link"><a href="#">Grades</a></div>
+        <div class="link"><a href="#">Modules</a></div>
+        <div class="title-black"><a href="#">Tests</a></div>
+      </div>
+
+      <div class="right-content">
+        <div class="tabs">
+          <button class="tab-btn">Thông tin cơ bản</button>
+          <button class="tab-btn active">Câu hỏi</button>
+          <button class="tab-btn">Câu trả lời</button>
+        </div>
+
+        <section class="content-section">
+          <h2>Lịch sử Đảng cộng sản Việt Nam</h2>
+          <hr />
+
+          <!-- Question 1 -->
+          <div class="question-card">
+            <div class="question-top">
+              <input class="question-input" placeholder="Nhập nội dung câu hỏi" />
+              <button class="dropdown-btn">
+                <span><input type="radio" checked /></span> Một đáp án
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <button class="add-option-btn"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="options-list">
+              <label class="option-label">
+                <input type="radio" name="q1" /> <span>Tùy chọn 1</span>
+                <button class="remove-btn"><i class="fas fa-times"></i></button>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="q1" /> <span>Tùy chọn 2</span>
+                <button class="remove-btn"><i class="fas fa-times"></i></button>
+              </label>
+              <label class="option-label disabled">
+                <input type="radio" disabled /> <span>Thêm tùy chọn</span>
+              </label>
+            </div>
+            <hr class="divider" />
+            <div class="bottom-controls">
+              <label class="answer-label">
+                <input type="checkbox" checked /> <span class="answer-text">Đáp án</span>
+                <span class="points">(1 điểm)</span>
+              </label>
+              <div class="actions">
+                <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                <label class="switch-label">
+                  <span>Bắt buộc</span>
+                  <input type="checkbox" role="switch" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="question-card">
+            <div class="question-top">
+              <input class="question-input" placeholder="Nhập nội dung câu hỏi" />
+              <button class="dropdown-btn">
+                <span><input type="checkbox" checked /></span> Nhiều đáp án
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <button class="add-option-btn"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="options-list">
+              <label class="option-label">
+                <input type="checkbox" name="q2" /> <span>Tùy chọn 1</span>
+                <button class="remove-btn"><i class="fas fa-times"></i></button>
+              </label>
+              <label class="option-label">
+                <input type="checkbox" name="q2" /> <span>Tùy chọn 2</span>
+                <button class="remove-btn"><i class="fas fa-times"></i></button>
+              </label>
+              <label class="option-label disabled">
+                <input type="checkbox" disabled /> <span>Thêm tùy chọn</span>
+              </label>
+            </div>
+            <hr class="divider" />
+            <div class="bottom-controls">
+              <label class="answer-label">
+                <input type="checkbox" checked /> <span class="answer-text">Đáp án</span>
+                <span class="points">(1 điểm)</span>
+              </label>
+              <div class="actions">
+                <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                <label class="switch-label">
+                  <span>Bắt buộc</span>
+                  <input type="checkbox" role="switch" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>

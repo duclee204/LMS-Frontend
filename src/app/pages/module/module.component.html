@@ -1,0 +1,117 @@
+<!-- module-manager.component.html -->
+<div class="container">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="logo-container">
+      <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png" alt="CMC Learn logo"
+        width="40" height="40" />
+      <span>CMC Learn</span>
+    </div>
+    <nav>
+      <a routerLink="/dashboard"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a routerLink="/calendar"><i class="fas fa-calendar"></i>Calender</a>
+      <a routerLink="/courses"><i class="fas fa-book"></i>Courses</a>
+      <a routerLink="/reports"><i class="fas fa-chart-bar"></i>Reports</a>
+      <a routerLink="/messages"><i class="fas fa-comment-alt"></i>Messages</a>
+      <a routerLink="/help"><i class="fas fa-question-circle"></i>Help</a>
+      <a routerLink="/settings"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+    <a routerLink="/logout" class="logout">
+      <i class="fas fa-sign-out-alt"></i>
+      Log out
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+    <header>
+      <h2 style="visibility: hidden;">Course Creation</h2>
+      <div class="header-right">
+        <i class="far fa-bell" title="Notifications" tabindex="0"></i>
+        <i class="far fa-envelope" title="Messages" tabindex="0"></i>
+        <div class="profile" (click)="toggleProfileDropdown($event)" tabindex="0">
+          <div class="profile-img-wrapper">
+            <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+              alt="Profile picture" />
+          </div>
+          <div class="profile-info">
+            <p class="profile-name">Swetha shankaresh</p>
+            <p class="profile-role">Student</p>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+          <div class="profile-dropdown" [ngStyle]="{ display: showProfileDropdown ? 'block' : 'none' }">
+            <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+            <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="breadcrumb">
+      <button (click)="toggleLeftMenu()" aria-label="Toggle left menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a routerLink="/courses" class="breadcrumb-course">ITPYTHON001</a>
+      <span>›</span>
+      <span class="current">Module</span>
+      <span>›</span>
+      <span class="item">Add Module</span>
+    </div>
+
+    <div class="content-wrapper" [ngClass]="{ 'menu-hidden': leftMenuHidden }">
+      <div class="left-menu" [ngClass]="{ hide: leftMenuHidden, show: !leftMenuHidden }">
+        <div class="link"><a href="#">Home</a></div>
+        <div class="link"><a href="#">Discussion</a></div>
+        <div class="link"><a href="#">Grades</a></div>
+        <div class="link"><a href="#">Modules</a></div>
+        <div class="title-black"><a href="#">Tests</a></div>
+      </div>
+
+      <div class="right-content">
+        <div class="course-content">
+          <div class="top-bar">
+            <button class="add-module" (click)="goToAddModule()">
+              <i class="fas fa-plus"></i> Module
+            </button>
+            <div class="filters">
+              <div class="search-wrapper">
+                <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Search" />
+                <i class="fas fa-search"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="module-list">
+            <div *ngFor="let item of filteredModules" class="module-item" role="listitem">
+              <div class="left">
+                <i class="far fa-file-alt"></i>{{ item.name }}
+              </div>
+              <div class="icon-cell">
+                <i [ngClass]="item.status === 'Published' ? 'fas fa-check-circle' : 'fas fa-ban'"
+                  [style.color]="item.status === 'Published' ? '#2ecc71' : '#e74c3c'"></i>
+                <div class="dropdown-container" (click)="$event.stopPropagation()">
+                  <i class="fas fa-ellipsis-v dropdown-toggle" (click)="toggleDropdown(item)"></i>
+
+                  <div class="dropdown-menu" *ngIf="item.showDropdown">
+                    <div class="dropdown-item" (click)="changeStatus(item, 'Published')">Xuất bản</div>
+                    <div class="dropdown-item" (click)="changeStatus(item, 'NotPublished')">Hủy xuất bản</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p *ngIf="filteredModules.length === 0" style="color: red; margin-top: 1rem;">No matching modules found.</p>
+
+          <div class="upload-area" (click)="fileInput.click()" role="button" tabindex="0">
+            <img src="Export.png" alt="Export icon" width="140" height="100" />
+            <p>Drop files here to add to module</p>
+            <p class="choose-files">or choose files</p>
+            <input type="file" #fileInput hidden (change)="handleFileUpload($event)" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

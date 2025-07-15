@@ -1,0 +1,132 @@
+<body>
+  <div class="overlay active" id="overlay"></div>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside id="sidebar" #aside>
+      <div class="logo-container">
+        <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png"
+          alt="CMC Learn logo with blue icon and text" width="40" height="40" />
+        <span>CMC Learn</span>
+      </div>
+      <nav>
+        <a href="#"><i class="fas fa-th-large"></i>Dashboard</a>
+        <a href="#"><i class="fas fa-calendar"></i>Calender</a>
+        <a href="#"><i class="fas fa-book"></i>Courses</a>
+        <a href="#"><i class="fas fa-pen-square"></i>Assignments</a>
+        <a href="#"><i class="fas fa-comment-alt"></i>Messages</a>
+        <a href="#"><i class="fas fa-question-circle"></i>Help</a>
+        <a href="#"><i class="fas fa-cog"></i>Setting</a>
+      </nav>
+      <a href="#" class="logout">
+        <i class="fas fa-sign-out-alt"></i>
+        Log out
+      </a>
+    </aside>
+    <!-- Main content -->
+    <main>
+      <header>
+        <h2 style="visibility: hidden;">Course Creation</h2>
+        <div class="header-right" aria-label="Notifications and messages">
+          <i class="far fa-bell" title="Notifications" tabindex="0"></i>
+          <i class="far fa-envelope" title="Messages" tabindex="0"></i>
+          <div class="profile" tabindex="0" aria-label="User profile menu" (click)="toggleProfileDropdown($event)">
+            <div class="profile-img-wrapper">
+              <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+                alt="Smiling woman with curly hair wearing glasses and holding books, on yellow background" />
+            </div>
+            <div class="profile-info">
+              <p class="profile-name">Swetha shankaresh</p>
+              <p class="profile-role">Student</p>
+            </div>
+            <i class="fas fa-chevron-down"></i>
+            <div class="profile-dropdown" *ngIf="showProfileDropdown">
+              <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+              <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="breadcrumb" aria-label="Breadcrumb navigation">
+        <button id="toggle-left-menu-btn" aria-label="Toggle left menu" (click)="toggleLeftMenu()">
+          <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+        <a href="#" class="breadcrumb-course" style="font-size: 20px; color: #018ED5;">
+          ITPYTHON001
+        </a>
+        <span aria-hidden="true">›</span>
+        <span class="current" aria-current="page">Module</span>
+        <span aria-hidden="true">›</span>
+        <span class="item" aria-current="page">Add Module</span>
+      </div>
+      <div class="modal-wrapper" (click)="handleModalClick($event)">
+        <div class="upload-document-modal" id="uploadModal">
+          <div class="upload-document-header">
+            <span id="uploadDocumentTitle">Upload Document</span>
+            <button aria-label="Close upload document" type="button" (click)="redirectToModulePage()"><i
+                class="fas fa-times"></i></button>
+          </div>
+          <div class="upload-document-body">
+            <img src="export.png" alt="Upload icon" style="width: 140px; height: 100px; margin-bottom: 16px;" (click)="triggerFileInput()" />
+            <p>Drag and drop a file, or <span class="browse" tabindex="0" role="button" aria-label="Browse files" (click)="triggerFileInput()">Browse</span></p>
+            <p class="allowed-types">Allowed file types: PNG, JPEG, JPG, GIF, PLAIN, HTML, DOCX, PDF, MP4,
+              MOV, AVI, WMV</p>
+            <p class="file-limit">No file size limit</p>
+            <p class="uploaded-file" *ngIf="selectedFile" style="color: green; margin-top: 10px;">Selected file: {{ selectedFile }}</p>
+          </div>
+          <div class="upload-document-footer">
+            <button class="cancel" type="button" (click)="redirectToAddModulePage()">Cancel</button>
+            <button class="upload" type="button" (click)="uploadFile()">Upload</button>
+          </div>
+        </div>
+      </div>
+      <div class="content-wrapper" [class.menu-hidden]="isLeftMenuHidden">
+        <div class="left-menu" id="left-menu" #leftMenu aria-label="Secondary navigation">
+          <div class="link"><a href="#">Home</a></div>
+          <div class="link"><a href="#">Discussion</a></div>
+          <div class="link"><a href="#">Grades</a></div>
+          <div class="link"><a href="#">Modules</a></div>
+          <div class="title-black" tabindex="0"><a href="#">Tests</a></div>
+        </div>
+        <div class="right-content">
+          <div class="course-content">
+            <div class="top-bar">
+              <button class="add-module">
+                <i class="fas fa-plus"></i> Module
+              </button>
+              <div class="filters">
+                <div class="search-wrapper">
+                  <input type="text" placeholder="Search" [(ngModel)]="searchTerm" (input)="searchModules()" />
+                  <i class="fas fa-search"></i>
+                </div>
+              </div>
+            </div>
+            <div class="module-list" role="list">
+              <div class="module-item" role="listitem" *ngFor="let mod of filteredModules">
+                <div class="left"><i class="far fa-file-alt"></i>{{ mod }}</div>
+                <div class="icon-cell" aria-hidden="true">
+                  <i [class]="moduleStatus[mod] === 'Published' ? 'fas fa-check-circle' : 'fas fa-ban'"
+                     [style.color]="moduleStatus[mod] === 'Published' ? '#2ecc71' : '#e74c3c'"></i>
+                  <div class="dropdown-container">
+                    <i class="fas fa-ellipsis-v dropdown-toggle"></i>
+                    <div class="dropdown-menu">
+                      <div class="dropdown-item">Publish</div>
+                      <div class="dropdown-item">Not Publish</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p id="noResultMessage" *ngIf="filteredModules.length === 0" style="color: red; margin-top: 1rem;">No matching modules found.</p>
+            <div class="upload-area" role="button" tabindex="0"
+              aria-label="Drop files here to add to module or choose files" (click)="triggerFileInput()">
+              <img src="Export.png" alt="Export icon" width="140" height="100" />
+              <p>Drop files here to add to module</p>
+              <p class="choose-files" style="color: red; cursor: pointer;">or choose files</p>
+              <input type="file" id="fileInput" style="display: none;" (change)="onFileChange($event)" #fileInput />
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

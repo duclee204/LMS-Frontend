@@ -1,0 +1,34 @@
+<div #contentWrapper class="content-wrapper">
+  <aside #leftMenu class="sidebar show">
+    <nav>
+      <ul>
+        <li><a routerLink="/dashboard">Dashboard</a></li>
+        <li><a routerLink="/exam">Exam</a></li>
+        <li><a routerLink="/grading">Grading</a></li>
+        <li><a routerLink="/doexam">Do Exam</a></li>
+        <li><a routerLink="/question1" class="active">Question1</a></li>
+        <li><a (click)="logout()">Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main>
+    <header>
+      <button #toggleBtn class="toggle-btn">☰</button>
+      <div class="header-right">
+        <div #profile class="profile">
+          <img src="assets/pictures/logocmc.png" alt="Profile" />
+        </div>
+        <div #profileDropdown class="profile-dropdown">
+          <a (click)="updateProfile()">Cập nhật hồ sơ</a>
+          <a (click)="logout()">Đăng xuất</a>
+        </div>
+      </div>
+    </header>
+    <section class="exam-section">
+      <h2>Chi tiết câu hỏi</h2>
+      <div class="exam-content">
+        <p>Đây là trang chi tiết câu hỏi. (Bổ sung nội dung tại đây)</p>
+      </div>
+    </section>
+  </main>
+</div>
