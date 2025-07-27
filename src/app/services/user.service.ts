@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface User {
@@ -10,8 +10,8 @@ export interface User {
   role: string;
   verified: boolean;
   cvUrl?: string | null;
-  avatarUrl?: string | null; // ✅ thêm avatarUrl để hiển thị ảnh
-  password?: string; // tùy chọn khi cập nhật
+  avatarUrl?: string | null;
+  password?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,28 +20,45 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Lấy danh sách người dùng
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
+
+  /** ✅ Lấy danh sách tất cả người dùng (admin) */
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}/list`);
+    return this.http.get<User[]>(`${this.apiUrl}/list`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
-  // ✅ Cập nhật người dùng với FormData (kèm file avatar)
+  /** ✅ Lấy thông tin user hiện tại */
+  getCurrentUser(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/profile`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /** ✅ Cập nhật thông tin người dùng với FormData (ảnh/avatar) */
   updateUserWithForm(id: number, formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update/${id}`, formData);
+    return this.http.put(`${this.apiUrl}/update/${id}`, formData, {
+      headers: this.getAuthHeaders()
+    });
   }
 
-  // (Optional) Nếu bạn vẫn muốn hỗ trợ PUT dạng JSON thuần
+  /** ✅ Cập nhật thông tin người dùng với JSON */
   updateUserJson(id: number, user: User): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update/${id}`, user);
+    return this.http.put(`${this.apiUrl}/update/${id}`, user, {
+      headers: this.getAuthHeaders()
+    });
   }
+
+  /** ✅ Xóa người dùng */
   deleteUserById(id: number): Observable<any> {
-  const token = localStorage.getItem('accessToken'); // hoặc từ AuthService nếu có
-  const headers = {
-    Authorization: `Bearer ${token}`
-  };
-
-  return this.http.delete<any>(`${this.apiUrl}/delete/${id}`, { headers });
-}
-
-
+    return this.http.delete(`${this.apiUrl}/delete/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 }

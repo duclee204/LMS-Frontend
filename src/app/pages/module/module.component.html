@@ -1,0 +1,258 @@
+<!-- module-manager.component.html -->
+<div class="container">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="logo-container">
+      <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/12/Icon-Dai-hoc-CMC.png" alt="CMC Learn logo"
+        width="40" height="40" />
+      <span>CMC Learn</span>
+    </div>
+    <nav>
+      <a routerLink="/dashboard"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a routerLink="/calendar"><i class="fas fa-calendar"></i>Calender</a>
+      <a routerLink="/courses"><i class="fas fa-book"></i>Courses</a>
+      <a routerLink="/reports"><i class="fas fa-chart-bar"></i>Reports</a>
+      <a routerLink="/messages"><i class="fas fa-comment-alt"></i>Messages</a>
+      <a routerLink="/help"><i class="fas fa-question-circle"></i>Help</a>
+      <a routerLink="/settings"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+    <a routerLink="/logout" class="logout">
+      <i class="fas fa-sign-out-alt"></i>
+      Log out
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+    <header>
+      <h2 style="visibility: hidden;">Course Creation</h2>
+      <div class="header-right">
+        <i class="far fa-bell" title="Notifications" tabindex="0"></i>
+        <i class="far fa-envelope" title="Messages" tabindex="0"></i>
+        <div class="profile" (click)="toggleProfileDropdown($event)" tabindex="0">
+          <div class="profile-img-wrapper">
+            <img src="https://storage.googleapis.com/a1aa/image/13f4cacd-b30a-45ae-d5d8-0a330e34f7a4.jpg"
+              alt="Profile picture" />
+          </div>
+          <div class="profile-info">
+            <p class="profile-name">Swetha shankaresh</p>
+            <p class="profile-role">Student</p>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+          <div class="profile-dropdown" [ngStyle]="{ display: showProfileDropdown ? 'block' : 'none' }">
+            <div class="dropdown-item" (click)="updateProfile()">Cập nhật hồ sơ</div>
+            <div class="dropdown-item" (click)="logout()">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="breadcrumb">
+      <button (click)="toggleLeftMenu()" aria-label="Toggle left menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a routerLink="/courses" class="breadcrumb-course">ITPYTHON001</a>
+      <span>›</span>
+      <span class="current">Module</span>
+      <span>›</span>
+      <span class="item">Add Module</span>
+    </div>
+
+    <div class="content-wrapper" [ngClass]="{ 'menu-hidden': leftMenuHidden }">
+      <div class="left-menu" [ngClass]="{ hide: leftMenuHidden, show: !leftMenuHidden }">
+        <div class="link"><a href="#">Home</a></div>
+        <div class="link"><a href="#">Discussion</a></div>
+        <div class="link"><a href="#">Grades</a></div>
+        <div class="link"><a href="#">Modules</a></div>
+        <div class="title-black"><a href="#">Tests</a></div>
+      </div>
+
+      <div class="right-content">
+        <div class="course-content">
+          <div class="top-bar">
+            <button class="add-module" (click)="goToAddModule()">
+              <i class="fas fa-plus"></i> Module
+            </button>
+            <button class="upload-video-btn" (click)="openVideoUploadDialog()">
+              <i class="fas fa-video"></i> Upload Video
+            </button>
+            <button class="assignment-btn" (click)="goToAssignmentManagement()">
+              <i class="fas fa-tasks"></i> Quản lý Bài tập
+            </button>
+            <div class="filters">
+              <div class="search-wrapper">
+                <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Search" />
+                <i class="fas fa-search"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="module-list">
+            <div *ngIf="filteredModules.length > 0" class="module-help-text">
+              <i class="fas fa-info-circle"></i>
+              Click vào module để xem danh sách video bên trong
+            </div>
+            <div *ngFor="let item of filteredModules" class="module-item" role="listitem">
+              <div class="module-header" (click)="toggleModuleExpand(item)">
+                <div class="left">
+                  <i class="fas fa-chevron-right expand-icon" 
+                     [class.expanded]="item.expanded"></i>
+                  <i class="far fa-file-alt module-icon"></i>
+                  <span class="module-title">{{ item.title }}</span>
+                  <span class="video-count" *ngIf="item.videos && item.videos.length > 0">
+                    ({{ item.videos.length }} video{{ item.videos.length > 1 ? 's' : '' }})
+                  </span>
+                </div>
+                <div class="icon-cell">
+                  <i [ngClass]="item.status === 'Published' ? 'fas fa-check-circle' : 'fas fa-ban'"
+                    [style.color]="item.status === 'Published' ? '#2ecc71' : '#e74c3c'"></i>
+                  <div class="dropdown-container" (click)="$event.stopPropagation()">
+                    <i class="fas fa-ellipsis-v dropdown-toggle" (click)="toggleDropdown(item)"></i>
+
+                    <div class="dropdown-menu" *ngIf="item.showDropdown">
+                      <div class="dropdown-item" (click)="changeStatus(item, 'Published')">Xuất bản</div>
+                      <div class="dropdown-item" (click)="changeStatus(item, 'NotPublished')">Hủy xuất bản</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Video list for expanded module -->
+              <div class="video-list" *ngIf="item.expanded && item.videos">
+                <div *ngIf="item.loadingVideos" class="loading-videos">
+                  <i class="fas fa-spinner fa-spin"></i> Đang tải videos...
+                </div>
+                <div *ngIf="!item.loadingVideos && item.videos.length === 0" class="no-videos">
+                  <i class="fas fa-video-slash"></i> 
+                  <span>Chưa có video nào khớp với module này</span>
+                  <small>
+                    Video sẽ hiển thị nếu tên video chứa "{{ item.title }}" hoặc gắn module ID khi upload
+                  </small>
+                </div>
+                <div *ngFor="let video of item.videos" class="video-item">
+                  <div class="video-info">
+                    <i class="fas fa-play-circle video-icon"></i>
+                    <div class="video-details">
+                      <h4 class="video-title">{{ video.title }}</h4>
+                      <p class="video-description">{{ video.description }}</p>
+                      <small class="video-meta">
+                        ID: {{ video.videoId }} | 
+                        Uploaded: {{ formatDate(video.createdAt) }}
+                      </small>
+                    </div>
+                  </div>
+                  <div class="video-actions">
+                    <button class="btn-play" (click)="playVideo(video.videoId)" title="Play video">
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn-download" (click)="downloadVideo(video.videoId)" title="Download">
+                      <i class="fas fa-download"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p *ngIf="filteredModules.length === 0" style="color: red; margin-top: 1rem;">No matching modules found.</p>
+
+          <div class="upload-area" (click)="fileInput.click()" role="button" tabindex="0">
+            <img src="Export.png" alt="Export icon" width="140" height="100" />
+            <p>Drop files here to add to module</p>
+            <p class="choose-files">or choose files</p>
+            <input type="file" #fileInput hidden (change)="handleFileUpload($event)" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Video Upload Modal -->
+  <div class="modal-overlay" *ngIf="showVideoUploadModal" (click)="closeVideoUploadDialog()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-video"></i> Upload Video to Module</h3>
+        <button class="close-btn" (click)="closeVideoUploadDialog()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="submitVideoUpload()" #videoForm="ngForm">
+          <div class="form-group">
+            <label for="videoTitle">Tên video/module</label>
+            <input
+              type="text"
+              id="videoTitle"
+              name="videoTitle"
+              [(ngModel)]="videoUploadData.title"
+              placeholder="VD: Bài giảng 1 - Giới thiệu Python"
+              required />
+          </div>
+
+          <div class="form-group">
+            <label for="moduleSelect">Chọn Module (tùy chọn)</label>
+            <select
+              id="moduleSelect"
+              name="moduleSelect"
+              [(ngModel)]="videoUploadData.selectedModuleId"
+              class="module-select">
+              <option value="">Tạo module mới</option>
+              <option *ngFor="let module of modules" [value]="module.moduleId">
+                {{ module.title }} (Order: {{ module.orderNumber }})
+              </option>
+            </select>
+            <small class="help-text">
+              Chọn module có sẵn để gắn video vào, hoặc để trống để tạo module mới
+            </small>
+          </div>
+          
+          <div class="form-group">
+            <label for="videoDescription">Mô tả</label>
+            <textarea
+              id="videoDescription"
+              name="videoDescription"
+              [(ngModel)]="videoUploadData.description"
+              placeholder="Mô tả nội dung video..."
+              rows="3"
+              required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>Chọn video</label>
+            <div class="video-upload-area" 
+                 (click)="videoFileInput.click()"
+                 (dragover)="onVideoDragOver($event)"
+                 (dragleave)="onVideoDragLeave($event)"
+                 (drop)="onVideoDrop($event)"
+                 [class.drag-over]="isVideoDragOver">
+              <input
+                type="file"
+                #videoFileInput
+                (change)="onVideoFileSelected($event)"
+                accept="video/*"
+                style="display: none;" />
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p *ngIf="!videoUploadData.selectedFile">Nhấp để chọn video hoặc kéo thả file vào đây</p>
+              <p *ngIf="videoUploadData.selectedFile" class="file-info">
+                <strong>{{ videoUploadData.selectedFile.name }}</strong><br>
+                <small>{{ formatFileSize(videoUploadData.selectedFile.size) }}</small>
+              </p>
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" (click)="closeVideoUploadDialog()">
+              Hủy
+            </button>
+            <button type="submit" class="upload-btn" [disabled]="videoUploading || !videoUploadData.selectedFile">
+              <i class="fas fa-upload" *ngIf="!videoUploading"></i>
+              <i class="fas fa-spinner fa-spin" *ngIf="videoUploading"></i>
+              {{ videoUploading ? 'Đang tải lên...' : 'Upload Video' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

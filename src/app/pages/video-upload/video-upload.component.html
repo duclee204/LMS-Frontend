@@ -27,6 +27,10 @@
         [(ngModel)]="title"
         placeholder="VD: Math Chapter 11"
         required />
+      <small class="help-text">
+        <i class="fas fa-lightbulb"></i>
+        Tip: Đặt tên video có chứa tên module để video tự động hiển thị trong module tương ứng
+      </small>
     </div>
     <div class="form-group">
       <label for="courseId">Khóa học</label>
@@ -34,6 +38,7 @@
         id="courseId"
         name="courseId"
         [(ngModel)]="courseId"
+        (ngModelChange)="onCourseChange()"
         required
         [disabled]="loading || courses.length === 0">
         <option value="" disabled>
@@ -43,6 +48,42 @@
           {{ course.title }} (ID: {{ course.courseId }})
         </option>
       </select>
+      
+      <!-- New grouped course-module display -->
+      <div class="courses-modules-group" *ngIf="coursesWithModules.length > 0">
+        <h4>Chọn theo Khóa học và Module:</h4>
+        <div class="course-group" *ngFor="let course of coursesWithModules">
+          <div class="course-header" 
+               (click)="toggleCourseExpansion(course.courseId)"
+               [class.selected]="courseId === course.courseId">
+            <i class="fas" 
+               [class.fa-chevron-down]="isCourseExpanded(course.courseId)"
+               [class.fa-chevron-right]="!isCourseExpanded(course.courseId)"></i>
+            <span class="course-title">{{ course.title }}</span>
+            <span class="course-info">({{ course.modules.length }} modules)</span>
+          </div>
+          
+          <div class="modules-list" 
+               *ngIf="isCourseExpanded(course.courseId)">
+            <div class="module-item create-new"
+                 (click)="selectModuleFromGroup(course.courseId, '')"
+                 [class.selected]="courseId === course.courseId && selectedModuleId === ''">
+              <i class="fas fa-plus-circle"></i>
+              <span>Tạo module mới</span>
+            </div>
+            
+            <div class="module-item" 
+                 *ngFor="let module of course.modules"
+                 (click)="selectModuleFromGroup(course.courseId, module.moduleId)"
+                 [class.selected]="courseId === course.courseId && selectedModuleId === module.moduleId">
+              <i class="fas fa-play-circle"></i>
+              <span>{{ module.title }}</span>
+              <small>(Order: {{ module.orderNumber }})</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <small *ngIf="courses.length === 0 && !loading" class="help-text">
         Chỉ instructor mới có thể upload video cho khóa học của mình.
       </small>
@@ -57,21 +98,57 @@
         rows="3"
         required></textarea>
     </div>
+    
+    <div class="form-group">
+      <label for="moduleSelect">Chọn Module (tùy chọn)</label>
+      <select
+        id="moduleSelect"
+        name="moduleSelect"
+        [(ngModel)]="selectedModuleId"
+        [disabled]="loading || !courseId">
+        <option value="">Tạo module mới</option>
+        <option *ngFor="let module of availableModules" [value]="module.moduleId">
+          {{ module.title }} (Order: {{ module.orderNumber }})
+        </option>
+      </select>
+      <small class="help-text">
+        Chọn module có sẵn để gắn video vào, hoặc để trống để tạo module mới
+      </small>
+    </div>
+    
     <div class="form-group">
       <label for="video">Chọn video</label>
-      <input
-        type="file"
-        id="video"
-        name="video"
-        type="file" (change)="onFileSelected($event)"
-        accept="video/*"
-        required />
+      <div class="file-upload-wrapper">
+        <input
+          type="file"
+          id="video"
+          name="video"
+          (change)="onFileSelected($event)"
+          accept="video/*"
+          required
+          #fileInput />
+        <div class="file-upload-area" 
+             (click)="fileInput.click()"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave($event)"
+             (drop)="onDrop($event)"
+             [class.drag-over]="isDragOver">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p *ngIf="!selectedFile">Nhấp để chọn video hoặc kéo thả file vào đây</p>
+          <p *ngIf="selectedFile" class="file-info">
+            <strong>{{ selectedFile.name }}</strong><br>
+            <small>{{ formatFileSize(selectedFile.size) }}</small>
+          </p>
+        </div>
+      </div>
     </div>
     <button 
       type="submit" 
       class="submit-btn"
       [disabled]="loading || !courseId || courses.length === 0">
-      {{ loading ? 'Đang tải lên...' : 'Tải lên' }}
+      <i class="fas fa-upload" *ngIf="!loading"></i>
+      <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+      {{ loading ? 'Đang tải lên...' : 'Tải lên Video' }}
     </button>
     <div class="success-message" *ngIf="successMessage">
       ✅ Video đã được tải lên thành công! Bạn có thể tiếp tục upload video khác.
@@ -80,3 +157,4 @@
     </div>
   </div>
 </div>
+

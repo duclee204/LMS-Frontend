@@ -127,4 +127,24 @@ export class SessionService {
     }
     this.router.navigate(['/login']);
   }
+
+  getAvatarUrl(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedAvatar = sessionStorage.getItem('userAvatar');
+      if (savedAvatar && !savedAvatar.includes('default.png')) {
+        return savedAvatar;
+      }
+      
+      // Generate and save a reliable avatar
+      const avatars = [
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+      ];
+      const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+      sessionStorage.setItem('userAvatar', randomAvatar);
+      return randomAvatar;
+    }
+    return 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face';
+  }
 }

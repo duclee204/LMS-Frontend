@@ -39,6 +39,20 @@
         <video *ngIf="!hasNoVideos && !loading" #classroomVideo controls autoplay muted style="width:100%; border-radius: 12px;"></video>
       </div>
     </div>
+
+    <div class="course-actions" *ngIf="courseId">
+      <button class="action-btn" (click)="viewAssignments()">
+        <i class="fas fa-clipboard-list"></i>
+        Xem Bài tập
+      </button>
+      
+      <button class="action-btn instructor-only" 
+              *ngIf="userRole === 'instructor' || userRole === 'ROLE_instructor'"
+              (click)="manageAssignments()">
+        <i class="fas fa-tasks"></i>
+        Quản lý Bài tập
+      </button>
+    </div>
   </main>
   
   <aside class="right-sidebar" role="complementary" aria-label="Course lessons">

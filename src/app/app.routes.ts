@@ -6,13 +6,16 @@ import { LearnOnlineComponent } from './pages/learn-online/learn-online.componen
 import { VideoUploadComponent } from './pages/video-upload/video-upload.component';
 import { CoursesComponent } from './pages/courses/courses.component';
 import { CategoryComponent } from './pages/category/category.component';
-import { CourseManagementComponent } from './pages/course-management/course-management.component';
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard.component';
 import { CalendarComponent } from './pages/calendar/calendar.component';
 import { AssignmentsComponent } from './pages/assignments/assignments.component';
 import { MessagesComponent } from './pages/messages/messages.component';
 import { HelpComponent } from './pages/help/help.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { ModuleComponent } from './pages/module/module.component';
+import { AddModuleComponent } from './pages/add-module/add-module.component';
+import { ModulesDemoComponent } from './components/modules-demo/modules-demo.component';
+import { ApiTestComponent } from './components/api-test/api-test.component';
 import { authGuard } from './auth.guard';
 import { loginRedirectGuard } from './login-redirect.guard';
 import { adminGuard } from './admin.guard';
@@ -33,8 +36,6 @@ export const routes: Routes = [
   { path: 'classroom', redirectTo: '/learn-online', pathMatch: 'full' }, // Redirect cũ
   { path: 'video-upload', component: VideoUploadComponent, data: { title: 'Tải video lên' }, canActivate: [authGuard] },
   { path: 'category', component: CategoryComponent, data: { title: 'Quản lý danh mục' }, canActivate: [authGuard] },
-  { path: 'course-management', component: CourseManagementComponent, data: { title: 'Quản lý khóa học' }, canActivate: [authGuard] },
-    
   // Admin routes
   { path: 'admin/dashboard', component: AdminDashboardComponent, data: { title: 'Admin Dashboard' }, canActivate: [authGuard, adminGuard] },
   { path: 'admin/users', component: AdminDashboardComponent, data: { title: 'User Management' }, canActivate: [authGuard, adminGuard] }, // Temporary use AdminDashboard
@@ -51,11 +52,21 @@ export const routes: Routes = [
   // Routes for admin sidebar (without /admin prefix)
   { path: 'users', component: AdminDashboardComponent, data: { title: 'User Management' }, canActivate: [authGuard, adminGuard] },
   { path: 'exams', component: AdminDashboardComponent, data: { title: 'Exam Management' }, canActivate: [authGuard, adminGuard] },
-  { path: 'modules', component: AdminDashboardComponent, data: { title: 'Module Management' }, canActivate: [authGuard, adminGuard] },
+  { path: 'modules', component: ModuleComponent, data: { title: 'Module Management' }, canActivate: [authGuard] },
+  { path: 'modules/:courseId', component: ModuleComponent, data: { title: 'Course Modules', renderMode: 'client-only' }, canActivate: [authGuard] },
+  { path: 'addmodule', component: AddModuleComponent, data: { title: 'Add Module' }, canActivate: [authGuard] },
+  { path: 'addmodule/:courseId', component: AddModuleComponent, data: { title: 'Add Module', renderMode: 'client-only' }, canActivate: [authGuard] },
+  { path: 'modules-demo', component: ModulesDemoComponent, data: { title: 'Modules API Demo' }, canActivate: [authGuard] },
+  { path: 'api-test', component: ApiTestComponent, data: { title: 'API Testing Tool' }, canActivate: [authGuard] },
   { path: 'reports', component: AdminDashboardComponent, data: { title: 'Reports & Analytics' }, canActivate: [authGuard, adminGuard] },
   
   // Redirects for old URLs
   { path: 'tieude', redirectTo: '/category', pathMatch: 'full' },
   { path: 'qlkh', redirectTo: '/course-management', pathMatch: 'full' },
   { path: 'qlnd', component: UsersComponent, data: { title: 'Quản lý người dùng' }, canActivate: [authGuard] }, // ✅ Thêm dòng này
+  {
+    path: 'assignment-submission',
+    loadComponent: () => import('./pages/assignment-submission/assignment-submission.component').then(m => m.AssignmentSubmissionComponent),
+    canActivate: [authGuard]
+  },
 ];

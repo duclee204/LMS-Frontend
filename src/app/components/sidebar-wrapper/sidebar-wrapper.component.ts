@@ -92,4 +92,15 @@ export class SidebarWrapperComponent implements OnInit {
       }
     }
   }
+
+  get isInstructorOrAdmin(): boolean {
+    return this.userRole === 'instructor' || 
+           this.userRole === 'admin' || 
+           this.userRole === 'ROLE_instructor' || 
+           this.userRole === 'ROLE_admin';
+  }
+
+  get isStudent(): boolean {
+    return this.userRole === 'student' || this.userRole === 'ROLE_student';
+  }
 }

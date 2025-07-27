@@ -14,6 +14,9 @@
     <a (click)="navigateTo('/course-management'); $event.preventDefault()" [class.active]="isActiveRoute('/course-management')" style="cursor: pointer;">
       <i class="fas fa-book"></i>Courses
     </a>
+    <a (click)="navigateTo('/video-upload'); $event.preventDefault()" [class.active]="isActiveRoute('/video-upload')" style="cursor: pointer;">
+      <i class="fas fa-video"></i>Upload Video
+    </a>
     <a (click)="navigateTo('/category'); $event.preventDefault()" [class.active]="isActiveRoute('/category')" style="cursor: pointer;">
       <i class="fas fa-tags"></i>Categories
     </a>

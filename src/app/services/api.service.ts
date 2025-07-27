@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -22,8 +22,29 @@ export class ApiService {
   }
 
   // POST FormData - interceptor sẽ tự động thêm token  
-  postFormData<T>(endpoint: string, formData: FormData): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, formData);
+  postFormData<T>(url: string, formData: FormData): Observable<T> {
+    console.log('🔍 PostFormData API call to:', this.baseUrl + url);
+    
+    const token = this.getToken();
+    let headers = new HttpHeaders();
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    // Don't set Content-Type for FormData, let browser set it with boundary
+
+    return this.http.post<T>(`${this.baseUrl}${url}`, formData, { headers });
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    let headers = new HttpHeaders();
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    return headers;
   }
 
   // PUT request - interceptor sẽ tự động thêm token
@@ -46,6 +67,10 @@ export class ApiService {
   // Video-specific methods
   getVideosByCourse(courseId: number): Observable<any[]> {
     return this.get<any[]>(`/videos/course/${courseId}`);
+  }
+
+  getVideosByModule(moduleId: number): Observable<any[]> {
+    return this.get<any[]>(`/videos/module/${moduleId}`);
   }
 
   streamVideo(videoId: number): Observable<Blob> {
@@ -73,5 +98,25 @@ export class ApiService {
   // Admin method để lấy tất cả khóa học
   getAllCourses(): Observable<any[]> {
     return this.get<any[]>('/courses/list');
+  }
+
+  private getHeaders(skipContentType = false): HttpHeaders {
+    const token = this.getToken();
+    let headers = new HttpHeaders();
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    if (!skipContentType) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
+    
+    return headers;
+  }
+
+  private getToken(): string | null {
+    // Implement your logic to retrieve the token
+    return localStorage.getItem('token');
   }
 }

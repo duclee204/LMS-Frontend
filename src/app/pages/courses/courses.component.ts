@@ -185,7 +185,10 @@ export class CoursesComponent implements OnInit {
   // Vào trang học/quản lý khóa học
   enterCourse(course: any) {
     if (this.userRole === 'instructor' || this.userRole === 'ROLE_instructor') {
-      this.router.navigate(['/video-upload'], { queryParams: { courseId: course.courseId } });
+      // Instructor vào trang quản lý modules
+      this.router.navigate(['/modules'], { 
+        queryParams: { courseId: course.courseId || course.id } 
+      });
     } else if (this.userRole === 'student' || this.userRole === 'ROLE_student') {
       if (course.enrolled) {
         this.router.navigate(['/learn-online'], { queryParams: { courseId: course.courseId } });
@@ -306,6 +309,8 @@ export class CoursesComponent implements OnInit {
   // Profile component event handlers
   onProfileUpdate() {
     console.log('Profile update requested');
+    // Reload user info after profile update
+    this.loadUserInfo();
   }
 
   onLogout() {

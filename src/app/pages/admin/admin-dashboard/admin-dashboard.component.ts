@@ -39,6 +39,8 @@ export class AdminDashboardComponent implements OnInit {
   // Profile component event handlers
   onProfileUpdate() {
     console.log('Profile update requested');
+    // Reload user info after profile update
+    this.loadUserInfo();
   }
 
   onLogout() {

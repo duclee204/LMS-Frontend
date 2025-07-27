@@ -1,0 +1,173 @@
+<div class="layout-row">
+  <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+    <app-sidebar-wrapper></app-sidebar-wrapper>
+  </aside>
+  
+  <div class="main-content">
+    <!-- Profile component -->
+    <div class="profile-header">
+      <app-profile 
+        [username]="username"
+        [role]="userRole"
+        [avatarUrl]="avatarUrl"
+        (profileUpdate)="onProfileUpdate()"
+        (logout)="onLogout()">
+      </app-profile>
+    </div>
+    
+    <div class="assignment-container">
+      <!-- Header -->
+      <div class="page-header">
+        <button class="back-btn" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> Quay lại khóa học
+        </button>
+        <h1>Bài tập</h1>
+      </div>
+
+      <!-- Loading indicator -->
+      <div *ngIf="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Đang tải...
+      </div>
+
+      <!-- Assignments list -->
+      <div class="assignments-list" *ngIf="!loading">
+        <div class="assignment-card" *ngFor="let assignment of assignments" 
+             [class.overdue]="isOverdue(assignment.dueDate)"
+             [class.submitted]="hasSubmitted(assignment.assignmentId!)">
+          
+          <div class="assignment-header">
+            <h3>{{ assignment.title }}</h3>
+            <div class="assignment-status">
+              <span *ngIf="hasSubmitted(assignment.assignmentId!)" class="status-submitted">
+                <i class="fas fa-check-circle"></i> Đã nộp
+              </span>
+              <span *ngIf="isOverdue(assignment.dueDate) && !hasSubmitted(assignment.assignmentId!)" class="status-overdue">
+                <i class="fas fa-exclamation-triangle"></i> Quá hạn
+              </span>
+              <span *ngIf="!hasSubmitted(assignment.assignmentId!) && !isOverdue(assignment.dueDate)" class="status-pending">
+                <i class="fas fa-clock"></i> Chưa nộp
+              </span>
+            </div>
+          </div>
+
+          <p class="assignment-description">{{ assignment.description || 'Không có mô tả' }}</p>
+
+          <div class="assignment-meta">
+            <div class="meta-item">
+              <i class="fas fa-calendar"></i>
+              <span [class.overdue-text]="isOverdue(assignment.dueDate)">
+                Hạn nộp: {{ formatDate(assignment.dueDate) }}
+              </span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-star"></i>
+              <span>Điểm tối đa: {{ assignment.maxPoints || 100 }}</span>
+            </div>
+          </div>
+
+          <!-- Submission status -->
+          <div class="submission-status" *ngIf="hasSubmitted(assignment.assignmentId!)">
+            <ng-container *ngIf="getSubmission(assignment.assignmentId!) as submission">
+              <div class="submitted-info">
+                <p><strong>Đã nộp lúc:</strong> {{ formatDate(submission.submittedAt) }}</p>
+                <div *ngIf="submission.pointsEarned !== null && submission.pointsEarned !== undefined" class="grade-info">
+                  <p><strong>Điểm:</strong> {{ submission.pointsEarned }}/{{ assignment.maxPoints }}</p>
+                  <p *ngIf="submission.feedback"><strong>Feedback:</strong> {{ submission.feedback }}</p>
+                </div>
+                <p *ngIf="submission.pointsEarned === null || submission.pointsEarned === undefined" class="waiting-grade">
+                  <i class="fas fa-hourglass-half"></i> Đang chờ chấm điểm
+                </p>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Submit button -->
+          <div class="assignment-actions">
+            <button class="submit-btn" 
+                    *ngIf="!hasSubmitted(assignment.assignmentId!)"
+                    (click)="startSubmission(assignment)"
+                    [disabled]="isOverdue(assignment.dueDate)">
+              <i class="fas fa-upload"></i>
+              {{ isOverdue(assignment.dueDate) ? 'Đã quá hạn' : 'Nộp bài' }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="assignments.length === 0" class="empty-state">
+          <i class="fas fa-clipboard-list"></i>
+          <p>Chưa có bài tập nào trong phần này.</p>
+        </div>
+      </div>
+
+      <!-- Submission Form Modal -->
+      <div class="modal-overlay" *ngIf="showSubmissionForm" (click)="resetSubmissionForm()">
+        <div class="modal-content submission-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Nộp bài: {{ selectedAssignment?.title }}</h3>
+            <button class="close-btn" (click)="resetSubmissionForm()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="assignment-info">
+            <p><strong>Mô tả:</strong> {{ selectedAssignment?.description || 'Không có mô tả' }}</p>
+            <div class="info-meta">
+              <span>
+                <i class="fas fa-calendar"></i>
+                Hạn nộp: {{ formatDate(selectedAssignment?.dueDate) }}
+              </span>
+              <span>
+                <i class="fas fa-star"></i>
+                Điểm tối đa: {{ selectedAssignment?.maxPoints || 100 }}
+              </span>
+            </div>
+          </div>
+          
+          <form (ngSubmit)="submitAssignment()" class="submission-form">
+            <div class="form-group">
+              <label for="submissionText">Nội dung bài làm</label>
+              <textarea id="submissionText" 
+                        [(ngModel)]="submissionForm.submissionText" 
+                        name="submissionText" 
+                        rows="8" 
+                        placeholder="Nhập nội dung bài làm của bạn..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="file">Đính kèm file (tùy chọn)</label>
+              <div class="file-upload-area" (click)="fileInput.click()">
+                <input type="file" 
+                       #fileInput
+                       (change)="onFileSelected($event)"
+                       accept=".pdf,.doc,.docx,.txt,.zip,.rar,.jpg,.png"
+                       style="display: none;">
+                <div class="file-upload-info">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p *ngIf="!selectedFile">Nhấp để chọn file hoặc kéo thả file vào đây</p>
+                  <p *ngIf="selectedFile" class="selected-file">
+                    <strong>{{ selectedFile.name }}</strong><br>
+                    <small>{{ formatFileSize(selectedFile.size) }}</small>
+                  </p>
+                </div>
+              </div>
+              <small class="help-text">
+                Hỗ trợ: PDF, DOC, DOCX, TXT, ZIP, RAR, JPG, PNG. Kích thước tối đa: 50MB
+              </small>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" (click)="resetSubmissionForm()">
+                Hủy
+              </button>
+              <button type="submit" class="btn-submit" [disabled]="submitting">
+                <i class="fas fa-upload" *ngIf="!submitting"></i>
+                <i class="fas fa-spinner fa-spin" *ngIf="submitting"></i>
+                {{ submitting ? 'Đang nộp bài...' : 'Nộp bài' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

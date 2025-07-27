@@ -1,0 +1,62 @@
+<div class="sidebar-wrapper">
+  <div class="sidebar-header">
+    <h2>CMC Learn</h2>
+  </div>
+  <div class="sidebar-content">
+    <!-- Common links -->
+    <a routerLink="/dashboard" class="sidebar-link" routerLinkActive="active">
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/courses" class="sidebar-link" routerLinkActive="active">
+      <i class="fas fa-book"></i>
+      <span>Khóa học</span>
+    </a>
+    <a routerLink="/modules" class="sidebar-link" routerLinkActive="active">
+      <i class="fas fa-th"></i>
+      <span>Modules</span>
+    </a>
+    <a routerLink="/video-upload" class="sidebar-link" routerLinkActive="active">
+      <i class="fas fa-video"></i>
+      <span>Upload Video</span>
+    </a>
+    <a routerLink="/reports" class="sidebar-link" routerLinkActive="active">
+      <i class="fas fa-chart-line"></i>
+      <span>Báo cáo</span>
+    </a>
+    <a routerLink="/settings" class="sidebar-link" routerLinkActive="active">
+      <i class="fas fa-cog"></i>
+      <span>Cài đặt</span>
+    </a>
+
+    <!-- Student only -->
+    <ng-container *ngIf="isStudent">
+      <a routerLink="/assignment-submission" 
+         class="sidebar-link" 
+         routerLinkActive="active"
+         title="Xem và nộp bài tập">
+        <i class="fas fa-upload"></i>
+        <span>Bài tập của tôi</span>
+      </a>
+    </ng-container>
+
+    <!-- Instructor/Admin only -->
+    <ng-container *ngIf="isInstructorOrAdmin">
+      <a routerLink="/assignment-management" 
+         class="sidebar-link" 
+         routerLinkActive="active"
+         title="Quản lý bài tập">
+        <i class="fas fa-tasks"></i>
+        <span>Quản lý Bài tập</span>
+      </a>
+    </ng-container>
+
+    <!-- Common links -->
+    <a routerLink="/assignments" 
+       class="sidebar-link" 
+       routerLinkActive="active">
+      <i class="fas fa-clipboard-list"></i>
+      <span>Bài tập</span>
+    </a>
+  </div>
+</div>

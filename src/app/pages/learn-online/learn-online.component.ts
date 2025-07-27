@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SessionService } from '../../services/session.service';
 import { FormsModule } from '@angular/forms';
@@ -40,6 +40,7 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
     private apiService: ApiService, 
     private route: ActivatedRoute,
     private sessionService: SessionService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -327,10 +328,36 @@ export class LearnOnlineComponent implements OnInit, OnDestroy {
   onProfileUpdate() {
     // Handle profile update - could navigate to profile page or refresh data
     console.log('Profile update requested');
+    // Reload user info after profile update
+    this.initializeUserProfile();
   }
 
   onLogout() {
     // Handle logout through session service
     this.sessionService.logout();
+  }
+
+  viewAssignments() {
+    console.log('🔍 View assignments clicked. User role:', this.userRole, 'Course ID:', this.courseId);
+    
+    if (this.courseId) {
+      if (this.userRole === 'student' || this.userRole === 'ROLE_student') {
+        this.router.navigate(['/assignment-submission'], { 
+          queryParams: { courseId: this.courseId } 
+        });
+      } else {
+        this.router.navigate(['/assignment-management'], { 
+          queryParams: { courseId: this.courseId } 
+        });
+      }
+    } else {
+      alert('Vui lòng chọn khóa học trước');
+    }
+  }
+
+  manageAssignments() {
+    this.router.navigate(['/assignment-management'], { 
+      queryParams: { courseId: this.courseId } 
+    });
   }
 }
