@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "scripts": {
     "heroku-postbuild": "npm install -g @angular/cli && ng build --configuration production",
-    "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
