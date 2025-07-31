@@ -1,1 +1,1 @@
-web: node dist/frontend/server/server.mjs
+web: npm start
