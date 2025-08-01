@@ -18,7 +18,7 @@ export interface Course {
   providedIn: 'root'
 })
 export class CourseService {
-  private baseUrl = 'http://localhost:8080/api/courses';
+  private baseUrl = 'https://lms-backend001-9bfc04222cdc.herokuapp.com/api/courses';
 
   constructor(private http: HttpClient) {}
 

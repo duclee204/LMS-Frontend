@@ -16,7 +16,7 @@ export interface User {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = 'https://lms-backend001-9bfc04222cdc.herokuapp.com/api/users';
 
   constructor(private http: HttpClient) {}
 
