@@ -7,7 +7,7 @@ export class ApiService {
   getAllCoursesWithStatus(userId: number): Observable<any[]> {
     return this.get<any[]>(`/courses/all-with-status?userId=${userId}`);
   }
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = 'https://lms-backend001-9bfc04222cdc.herokuapp.com/api';
 
   constructor(private http: HttpClient) {}
 
